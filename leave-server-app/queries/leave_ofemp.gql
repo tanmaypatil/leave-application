@@ -1,0 +1,18 @@
+query leave_ofemp($id: Int) {
+  leave_app_employee(where : { id : {_eq : $id} }) {
+    emp_name
+    leave_applications {
+      from_date
+      to_date
+      type
+      approved_by
+      employeeByApprovedBy {
+        emp_name
+      }
+    }
+    employee_leavebals {
+      bal
+      leave_type
+    }
+  }
+}

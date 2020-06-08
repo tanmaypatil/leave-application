@@ -1,0 +1,13 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: CREATE TABLE "leave_app"."leave_application"("from_date" date NOT NULL, "to_date"
+      date NOT NULL, "working_days" integer NOT NULL, "type" text NOT NULL, "emp_id"
+      integer NOT NULL, "id" serial NOT NULL, PRIMARY KEY ("id") , UNIQUE ("emp_id",
+      "from_date")); COMMENT ON TABLE "leave_app"."leave_application" IS E'leave application
+      table';
+  type: run_sql
+- args:
+    name: leave_application
+    schema: leave_app
+  type: add_existing_table_or_view

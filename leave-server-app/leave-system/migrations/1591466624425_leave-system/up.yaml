@@ -1,0 +1,4 @@
+- args:
+    tables: []
+    version: 2
+  type: replace_metadata

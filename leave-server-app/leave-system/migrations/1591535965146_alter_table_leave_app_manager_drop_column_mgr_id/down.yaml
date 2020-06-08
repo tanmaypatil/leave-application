@@ -1,0 +1,10 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "leave_app"."manager" ADD COLUMN "mgr_id" int4;
+  type: run_sql
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "leave_app"."manager" ALTER COLUMN "mgr_id" DROP NOT NULL;
+  type: run_sql

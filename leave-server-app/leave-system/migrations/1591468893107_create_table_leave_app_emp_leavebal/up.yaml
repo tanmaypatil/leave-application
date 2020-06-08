@@ -1,0 +1,13 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: CREATE TABLE "leave_app"."emp_leavebal"("id" serial NOT NULL, "emp_id" integer
+      NOT NULL, "leave_type" text NOT NULL, "bal" integer NOT NULL, PRIMARY KEY ("id")
+      , FOREIGN KEY ("emp_id") REFERENCES "leave_app"."employee"("id") ON UPDATE restrict
+      ON DELETE restrict); COMMENT ON TABLE "leave_app"."emp_leavebal" IS E'leave
+      balance of employee';
+  type: run_sql
+- args:
+    name: emp_leavebal
+    schema: leave_app
+  type: add_existing_table_or_view

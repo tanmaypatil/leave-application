@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: alter table "leave_app"."employee_leavebal" rename to "emp_leavebal";
+  type: run_sql

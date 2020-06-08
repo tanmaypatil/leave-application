@@ -1,0 +1,8 @@
+- args:
+    name: employeeByApprovedBy
+    table:
+      name: leave_applications
+      schema: leave_app
+    using:
+      foreign_key_constraint_on: approved_by
+  type: create_object_relationship

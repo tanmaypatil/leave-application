@@ -1,0 +1,10 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: |-
+      alter table "leave_app"."leave_applications"
+                 add constraint "leave_applications_approved_by_fkey"
+                 foreign key ("approved_by")
+                 references "leave_app"."employee"
+                 ("id") on update restrict on delete restrict;
+  type: run_sql

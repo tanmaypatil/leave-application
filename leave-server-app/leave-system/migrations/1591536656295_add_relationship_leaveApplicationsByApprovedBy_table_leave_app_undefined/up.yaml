@@ -1,0 +1,12 @@
+- args:
+    name: leaveApplicationsByApprovedBy
+    table:
+      name: employee
+      schema: leave_app
+    using:
+      foreign_key_constraint_on:
+        column: approved_by
+        table:
+          name: leave_applications
+          schema: leave_app
+  type: create_array_relationship

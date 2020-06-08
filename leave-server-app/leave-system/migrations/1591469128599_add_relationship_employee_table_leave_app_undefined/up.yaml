@@ -1,0 +1,8 @@
+- args:
+    name: employee
+    table:
+      name: leave_application
+      schema: leave_app
+    using:
+      foreign_key_constraint_on: emp_id
+  type: create_object_relationship
