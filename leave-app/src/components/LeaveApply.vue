@@ -40,26 +40,6 @@ export default {
         { value: "b", text: "Earned Leave" }
       ],
       items: [
-        {
-          Date: "Friday ,1 May 2020",
-          type: "Earned Leave",
-          approved_by: "Mike Ford"
-        },
-        {
-          Date: "Wednesday ,15 Apr 2020",
-          type: "Earned Leave",
-          approved_by: "Mike Ford"
-        },
-        {
-          Date: "Wednesday ,1 Apr 2020",
-          type: "Earned Leave",
-          approved_by: "Russ Smith"
-        },
-        {
-          Date: "Friday ,1 Apr 2019",
-          type: "Sick Leave",
-          approved_by: "Ashley willamns"
-        }
       ]
     };
   },
