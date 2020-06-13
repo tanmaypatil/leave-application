@@ -4,16 +4,28 @@
       <b-row>
         <b-col></b-col>
         <b-col>
-          <label for="leave-datepicker">Apply Leave For</label>
-          <b-form-datepicker id="leave-datepicker" v-model="fromdate" class="mb-2"></b-form-datepicker>
-          <b-form-select v-model="selected" :options="options" size="sm" class="mt-3"></b-form-select>
+          <label for="leave-frdatepicker">Leave from date</label>
+          <b-form-datepicker id="leave-frdatepicker" v-model="fromdate" class="mb-2"></b-form-datepicker>
+          <label for="leave-todatepicker">Leave to date</label>
+          <b-form-datepicker id="leave-todatepicker" v-model="todate" class="mb-2"></b-form-datepicker>
+          <b-form-textarea id="working-days" plaintext :value="working_days"></b-form-textarea>
+          <label for="type-of-leave">type of leave</label>
+          <b-form-select
+            id="type-of-leave"
+            v-model="selected"
+            :options="options"
+            size="sm"
+            class="mt-3"
+          ></b-form-select>
           <b-button v-on:click="apply" class="mt-4" pill variant="primary">Apply Leave</b-button>
         </b-col>
         <b-col cols="6">
           <b-card-body title="Leave Information">
             <b-card-text>
-              <b-form-textarea id="leave-detail" plaintext :value="sick_leave"></b-form-textarea>
-              <b-form-textarea id="leave-detail" plaintext :value="earned_leave"></b-form-textarea>
+              <label for="error-panel">Errors:</label>
+              <b-form-textarea id="error-panel" plaintext :value="error_message"></b-form-textarea>
+              <b-form-textarea id="sick-leave-detail" size="sm" rows="1" plaintext :value="sick_leave"></b-form-textarea>
+              <b-form-textarea id="earned-leave-detail" size="sm" rows="1" plaintext :value="earned_leave"></b-form-textarea>
               <div>
                 <b-table striped hover :items="items"></b-table>
               </div>
@@ -30,9 +42,12 @@ export default {
   name: "leave-apply",
   data() {
     return {
+      error_message: '',
       fromdate: null,
+      todate: null,
       sick_leave: "Sick leave balance :  0.",
       earned_leave: "Earned leave balance :  0.",
+      working_days: "Leave applied for : 0 days",
       selected: null,
       options: [
         { value: null, text: "Please select an option" },
@@ -43,6 +58,19 @@ export default {
     };
   },
   methods: {
+    // function to validate leave from date and leave to date
+    validate_date: function(inp_date_str, leave_ind) {
+      console.log(inp_date_str);
+      let err = "";
+      let inp_date = new Date(inp_date_str);
+      let day = inp_date.getDay();
+      // It is a weekend , it is already holiday
+      if (day === 0 || day === 6) {
+        err =
+          "Weekend can not be selected for leave " + leave_ind + " :  " + inp_date_str;
+      } 
+      return err;
+    },
     apply: function() {
       // Call event to add leave to the employee
       const query = `
@@ -54,37 +82,56 @@ export default {
         affected_rows
       }
     }`;
-      alert(this.selected);
+     
+      let errors = [];
+      this.error_message = [];
+      // validate from date
+      let err = this.validate_date(this.fromdate, "from date");
+      if ( err !="" ) errors.push(err);
+      // validate to date
+      err = this.validate_date(this.todate, "to date");
+      if ( err !="" ) errors.push(err);
+      // If only no errors , then proceed with leave application
+      for ( let e of errors) {
+        this.error_message =  this.error_message + e + '\n' ; 
+      }
+      if (errors.length === 0 ) {
+        let variables = {
+          from_date: this.fromdate,
+          to_date: this.todate,
+          type: this.selected,
+          working_days: 1,
+          emp_id: 2
+        };
+        const url = "http://localhost:8080/v1/graphql";
+        const opts = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: query, variables: variables })
+        };
 
-      let variables = {
-        from_date: this.fromdate,
-        to_date: this.fromdate,
-        type: this.selected,
-        working_days : 1,
-        emp_id: 2
-      };
-      const url = "http://localhost:8080/v1/graphql";
-      const opts = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: query, variables: variables })
-      };
-
-      fetch(url, opts)
-        .then(res => res.json())
-        .then(result => {
-          if (result.data && result.data.insert_leave_app_leave_applications) {
-            // Leave application is successful
-            if (result.data.insert_leave_app_leave_applications.affected_rows === 1) {
-              this.$bvToast.toast(`Leave applied successfully`, {
-                title: "Leave Apply confirmation",
-                autoHideDelay: 5000,
-                appendToast: true
-              });
+        fetch(url, opts)
+          .then(res => res.json())
+          .then(result => {
+            if (
+              result.data &&
+              result.data.insert_leave_app_leave_applications
+            ) {
+              // Leave application is successful
+              if (
+                result.data.insert_leave_app_leave_applications
+                  .affected_rows === 1
+              ) {
+                this.$bvToast.toast(`Leave applied successfully`, {
+                  title: "Leave Apply confirmation",
+                  autoHideDelay: 5000,
+                  appendToast: true
+                });
+              }
             }
-          }
-        })
-        .catch(console.error);
+          })
+          .catch(console.error);
+      }
     }
   },
   // Fetch the leave data for the employee
@@ -140,10 +187,9 @@ export default {
           leave_obj = {};
           leave_obj.Date = leave.from_date;
           leave_obj.type = leave.type;
-          if (leave.employeeByApprovedBy ) {
-          leave_obj.approved_by = leave.employeeByApprovedBy.emp_name;
-          }
-          else {
+          if (leave.employeeByApprovedBy) {
+            leave_obj.approved_by = leave.employeeByApprovedBy.emp_name;
+          } else {
             leave_obj.approved_by = "to be approved";
           }
           this.items.push(leave_obj);
