@@ -40,6 +40,10 @@ describe('Datediff', function () {
         let days = utils.work_days("2020-06-12","2020-06-15");
         assert.equal(2,days);   
       });
+      it('from date - friday , to-date - next friday weekend consider weekend included in them for work day calculation ', function () {
+        let days = utils.work_days("2020-06-08","2020-06-25");
+        assert.equal(14,days);   
+      });
     });
 
   });

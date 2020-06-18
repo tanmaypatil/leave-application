@@ -24,8 +24,20 @@
             <b-card-text>
               <label for="error-panel">Errors:</label>
               <b-form-textarea id="error-panel" plaintext :value="error_message"></b-form-textarea>
-              <b-form-textarea id="sick-leave-detail" size="sm" rows="1" plaintext :value="sick_leave"></b-form-textarea>
-              <b-form-textarea id="earned-leave-detail" size="sm" rows="1" plaintext :value="earned_leave"></b-form-textarea>
+              <b-form-textarea
+                id="sick-leave-detail"
+                size="sm"
+                rows="1"
+                plaintext
+                :value="sick_leave"
+              ></b-form-textarea>
+              <b-form-textarea
+                id="earned-leave-detail"
+                size="sm"
+                rows="1"
+                plaintext
+                :value="earned_leave"
+              ></b-form-textarea>
               <div>
                 <b-table striped hover :items="items"></b-table>
               </div>
@@ -42,7 +54,7 @@ export default {
   name: "leave-apply",
   data() {
     return {
-      error_message: '',
+      error_message: "",
       fromdate: null,
       todate: null,
       sick_leave: "Sick leave balance :  0.",
@@ -58,6 +70,31 @@ export default {
     };
   },
   methods: {
+    // function to calculate work days between dates
+    work_days: function(from_date, to_date) {
+      let leave_days = 0;
+      let weeks = 0;
+      let date1 = this.$moment(from_date);
+      let date2 = this.$moment(to_date);
+      let totDays = date2.diff(date1, "days");
+      // find out the day of the week - from date
+      // convert to date object
+      let from_dt = new Date(from_date);
+      //let to_dt = new Date(to_date);
+      // find out the day of the week
+      let from_day = from_dt.getDay();
+      //let to_day = to_dt.getDay();
+      /* find out the distance from the first Sunday */
+      let dist = 7 - from_day;
+      if (totDays > dist) {
+        weeks = 1;
+        let excess = totDays - dist;
+        // check out full weeks
+        weeks += Math.floor(excess / 7);
+      }
+      leave_days = totDays - 2 * weeks + 1;
+      return leave_days;
+    },
     // function to validate leave from date and leave to date
     validate_date: function(inp_date_str, leave_ind) {
       console.log(inp_date_str);
@@ -67,8 +104,11 @@ export default {
       // It is a weekend , it is already holiday
       if (day === 0 || day === 6) {
         err =
-          "Weekend can not be selected for leave " + leave_ind + " :  " + inp_date_str;
-      } 
+          "Weekend can not be selected for leave " +
+          leave_ind +
+          " :  " +
+          inp_date_str;
+      }
       return err;
     },
     apply: function() {
@@ -82,25 +122,28 @@ export default {
         affected_rows
       }
     }`;
-     
       let errors = [];
       this.error_message = [];
       // validate from date
       let err = this.validate_date(this.fromdate, "from date");
-      if ( err !="" ) errors.push(err);
+      if (err != "") errors.push(err);
       // validate to date
       err = this.validate_date(this.todate, "to date");
-      if ( err !="" ) errors.push(err);
+      if (err != "") errors.push(err);
       // If only no errors , then proceed with leave application
-      for ( let e of errors) {
-        this.error_message =  this.error_message + e + '\n' ; 
+      for (let e of errors) {
+        this.error_message = this.error_message + e + "\n";
       }
-      if (errors.length === 0 ) {
+      // if no errors , proceed for leave application
+      if (errors.length === 0) {
+        // Calculate working days , leave needs to be applied for working days 
+        let leave_days = this.work_days(this.fromdate, this.todate);
+
         let variables = {
           from_date: this.fromdate,
           to_date: this.todate,
           type: this.selected,
-          working_days: 1,
+          working_days: leave_days,
           emp_id: 2
         };
         const url = "http://localhost:8080/v1/graphql";
