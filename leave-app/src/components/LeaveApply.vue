@@ -7,7 +7,9 @@
           <label for="leave-frdatepicker">Leave from date</label>
           <b-form-datepicker id="leave-frdatepicker" v-model="fromdate" class="mb-2"></b-form-datepicker>
           <label for="leave-todatepicker">Leave to date</label>
-          <b-form-datepicker id="leave-todatepicker" v-model="todate" class="mb-2"></b-form-datepicker>
+          <div >
+             <b-form-datepicker v-on:input="calculate_leave_days" id="leave-todatepicker" v-model="todate"  class="mb-2"></b-form-datepicker> 
+          </div>
           <b-form-textarea id="working-days" plaintext :value="working_days"></b-form-textarea>
           <label for="type-of-leave">type of leave</label>
           <b-form-select
@@ -70,6 +72,11 @@ export default {
     };
   },
   methods: {
+    calculate_leave_days : function() {
+      console.log("calculate_leave_days function called ");
+      let leave_days = this.work_days(this.fromdate, this.todate);
+      this.working_days = "Leave applied for : "+ leave_days + " days" ;
+    },
     // function to calculate work days between dates
     work_days: function(from_date, to_date) {
       let leave_days = 0;
