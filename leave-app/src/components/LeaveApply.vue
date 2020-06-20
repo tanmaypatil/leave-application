@@ -5,12 +5,23 @@
         <b-col></b-col>
         <b-col>
           <label for="leave-frdatepicker">Leave from date</label>
-          <b-form-datepicker id="leave-frdatepicker" v-model="fromdate" class="mb-2"></b-form-datepicker>
+          <b-form-datepicker
+            id="leave-frdatepicker"
+            v-model="fromdate"
+            :state="leave_from_date_state"
+            class="mb-2"
+          ></b-form-datepicker>
           <label for="leave-todatepicker">Leave to date</label>
-          <div >
-             <b-form-datepicker v-on:input="calculate_leave_days" id="leave-todatepicker" v-model="todate"  class="mb-2"></b-form-datepicker> 
+          <div>
+            <b-form-datepicker
+              v-on:input="calculate_leave_days"
+              id="leave-todatepicker"
+              v-model="todate"
+              :state="leave_to_date_state"
+              class="mb-2"
+            ></b-form-datepicker>
           </div>
-          <b-form-textarea id="working-days" plaintext :value="working_days"></b-form-textarea>
+          <b-form-textarea id="working-days" plaintext :value="leave_days"></b-form-textarea>
           <label for="type-of-leave">type of leave</label>
           <b-form-select
             id="type-of-leave"
@@ -56,12 +67,18 @@ export default {
   name: "leave-apply",
   data() {
     return {
+      user_id: 2,
       error_message: "",
       fromdate: null,
       todate: null,
+      leave_from_date_state: true,
+      leave_to_date_state: true,
       sick_leave: "Sick leave balance :  0.",
+      sick_leave_value: 0,
       earned_leave: "Earned leave balance :  0.",
-      working_days: "Leave applied for : 0 days",
+      earned_leave_value: 0,
+      leave_days: "Leave applied for : 0 days",
+      leave_days_value: 0,
       selected: null,
       options: [
         { value: null, text: "Please select an option" },
@@ -72,10 +89,74 @@ export default {
     };
   },
   methods: {
-    calculate_leave_days : function() {
+    update_leave_balance: async function() {
+      let update_leave_bal_query = `mutation leave_bal_update($bal : Int , $leave_type : String , $emp_id : Int) {
+      update_leave_app_employee_leavebal(
+       _set: {bal: $bal, leave_type: $leave_type}, where: {emp_id: {_eq: $emp_id} _and : { leave_type: {_eq: $leave_type }}} ) {
+          affected_rows
+          returning {
+             bal
+             leave_type
+          }
+        }
+      }`;
+
+      let new_bal = 0;
+      if (this.selected === "sick_leave") {
+        new_bal = this.sick_leave_value - this.leave_days_value;
+        console.log("new sick leave bal" +new_bal);
+      } else {
+        new_bal = this.earned_leave_value - this.leave_days_value;
+         console.log("new earned leave bal" +new_bal);
+      }
+      let variables = {
+        bal: new_bal,
+        leave_type: this.selected,
+        emp_id: this.user_id
+      };
+
+      const url = "http://localhost:8080/v1/graphql";
+      const opts = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: update_leave_bal_query,
+          variables: variables
+        })
+      };
+
+      fetch(url, opts)
+        .then(res => res.json())
+        .then(result => {
+          if (result.data && result.data.update_leave_app_employee_leavebal) {
+            // Leave bal update is successful
+            if (
+              result.data.update_leave_app_employee_leavebal.affected_rows === 1
+            ) {
+              console.log("balance updated successfully");
+              if (this.selected === "sick_leave") {
+                this.sick_leave_value = new_bal;
+              } else {
+                this.earned_leave_value = new_bal;
+              }
+              
+            }
+          }
+        })
+        .catch(error => {
+          console.log("error is " + error.message);
+        });
+    },
+    calculate_leave_days: function() {
       console.log("calculate_leave_days function called ");
       let leave_days = this.work_days(this.fromdate, this.todate);
-      this.working_days = "Leave applied for : "+ leave_days + " days" ;
+      this.leave_days_value = leave_days;
+      this.leave_days = "Leave applied for : " + leave_days + " days";
+      if (this.leave_days_value < 0) {
+        this.leave_to_date_state = false;
+      } else {
+        this.leave_to_date_state = true;
+      }
     },
     // function to calculate work days between dates
     work_days: function(from_date, to_date) {
@@ -118,8 +199,49 @@ export default {
       }
       return err;
     },
+    // function to check if employee has leave balance
+    validate_leave_balance: function() {
+      let err = "";
+      console.log("inside validate_leave_balance");
+      console.log(
+        "leave type : " +
+          this.selected +
+          " leave applied for : " +
+          this.leave_days_value
+      );
+      if (this.leave_days_value <= 0) {
+        err =
+          "invalid leave application , Leave to-date : " +
+          this.todate +
+          " needs to be higher than Leave from-date : " +
+          this.fromdate;
+      } else if (
+        this.selected === "sick_leave" &&
+        this.leave_days_value > this.sick_leave_value
+      ) {
+        err =
+          "You do not have sufficient sick leave balance , leave requested : [ " +
+          this.leave_days_value +
+          "] , leave balance :  [ " +
+          this.sick_leave_value +
+          " ]";
+        this.leave_to_date_state = false;
+      } else if (
+        this.selected === "earned_leave" &&
+        this.leave_days_value > this.earned_leave_value
+      ) {
+        err =
+          "You do not have sufficient earned leave balance ,leave requested : [ " +
+          this.leave_days_value +
+          "] , leave balance :  [ " +
+          this.earned_leave_value +
+          " ]";
+        this.leave_to_date_state = false;
+      }
+      return err;
+    },
     apply: function() {
-      // Call event to add leave to the employee
+      // Call mutation to add leave to the employee
       const query = `
       mutation apply_leave($from_date : date ,$to_date : date , $type : String , $emp_id : Int,$working_days : Int) {
       insert_leave_app_leave_applications(objects: {from_date: $from_date, to_date: $to_date, type: $type, emp_id: $emp_id , working_days : $working_days}){
@@ -137,13 +259,16 @@ export default {
       // validate to date
       err = this.validate_date(this.todate, "to date");
       if (err != "") errors.push(err);
+      // validate leave balance
+      err = this.validate_leave_balance();
+      if (err != "") errors.push(err);
       // If only no errors , then proceed with leave application
       for (let e of errors) {
         this.error_message = this.error_message + e + "\n";
       }
       // if no errors , proceed for leave application
       if (errors.length === 0) {
-        // Calculate working days , leave needs to be applied for working days 
+        // Calculate working days , leave needs to be applied for working days
         let leave_days = this.work_days(this.fromdate, this.todate);
 
         let variables = {
@@ -151,7 +276,7 @@ export default {
           to_date: this.todate,
           type: this.selected,
           working_days: leave_days,
-          emp_id: 2
+          emp_id: this.user_id
         };
         const url = "http://localhost:8080/v1/graphql";
         const opts = {
@@ -172,6 +297,9 @@ export default {
                 result.data.insert_leave_app_leave_applications
                   .affected_rows === 1
               ) {
+                // update the leave balance
+                this.update_leave_balance(); 
+
                 this.$bvToast.toast(`Leave applied successfully`, {
                   title: "Leave Apply confirmation",
                   autoHideDelay: 5000,
@@ -223,9 +351,11 @@ export default {
         let leave_bal = result.data.leave_app_employee[0].employee_leavebals;
         // update leave balance for the screen
         for (let bal of leave_bal) {
-          if (bal.leave_type == "earned") {
+          if (bal.leave_type == "earned_leave") {
+            this.earned_leave_value = bal.bal;
             this.earned_leave = "Earned leave balance :" + bal.bal;
           } else {
+            this.sick_leave_value = bal.bal;
             this.sick_leave = "Sick leave balance :" + bal.bal;
           }
         }
