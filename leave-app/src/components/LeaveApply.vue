@@ -139,6 +139,8 @@ export default {
               } else {
                 this.earned_leave_value = new_bal;
               }
+              // emit a event to parent to rerender the component
+              this.$emit('ChangeView');
               
             }
           }
