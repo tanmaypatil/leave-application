@@ -59,7 +59,14 @@
         </b-col>
       </b-row>
     </b-card>
+    <b-modal id="bv-modal-example" hide-footer>
+      <div class="d-block text-center">
+      <h3>Leave applied successfully</h3>
+    </div>
+    <b-button class="mt-3" block @click="$bvModal.hide('bv-modal-example')">Close Me</b-button>
+  </b-modal>
   </div>
+  
 </template>
 
 <script>
@@ -299,14 +306,18 @@ export default {
                 result.data.insert_leave_app_leave_applications
                   .affected_rows === 1
               ) {
-                // update the leave balance
-                this.update_leave_balance(); 
-
-                this.$bvToast.toast(`Leave applied successfully`, {
-                  title: "Leave Apply confirmation",
-                  autoHideDelay: 5000,
-                  appendToast: true
-                });
+                    this.$bvModal.show("bv-modal-example");
+                    console.log("before showing toast");
+                    /*
+                    // Show success message to the user.
+                    this.$bvToast.toast(`Leave applied successfully`, {
+                    title: "Leave Apply confirmation",
+                    autoHideDelay: 5000,
+                    appendToast: true
+                    });*/
+                  // update the leave balance
+                  this.update_leave_balance(); 
+               
               }
             }
           })
@@ -325,6 +336,7 @@ export default {
         from_date
         to_date
         type
+        working_days
         approved_by
         employeeByApprovedBy {
           emp_name
@@ -367,7 +379,9 @@ export default {
         this.items.length = 0;
         for (let leave of leave_apps) {
           leave_obj = {};
-          leave_obj.Date = leave.from_date;
+          leave_obj.from_date = leave.from_date;
+          leave_obj.to_date = leave.to_date;
+          leave_obj.total_leaves = leave.working_days ;
           leave_obj.type = leave.type;
           if (leave.employeeByApprovedBy) {
             leave_obj.approved_by = leave.employeeByApprovedBy.emp_name;
