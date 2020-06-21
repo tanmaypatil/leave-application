@@ -2,6 +2,12 @@
   <div id="app">
     <h1>Apply Leave</h1>
     <leave-apply :key="componentKey"  v-on:ChangeView="this.forceRerender" ></leave-apply>
+       <b-modal id="bv-modal-example" hide-footer>
+      <div class="d-block text-center">
+      <h3>Leave applied successfully</h3>
+    </div>
+    <b-button class="mt-3" block @click="$bvModal.hide('bv-modal-example')">Close Me</b-button>
+  </b-modal>
   </div>
 </template>
 
@@ -20,7 +26,8 @@ export default {
   },
   methods: {
     forceRerender() {
-      console.log("Rerender the leave application display")
+      console.log("Rerender the leave application display");
+      this.$bvModal.show("bv-modal-example");
       this.componentKey += 1;
     }
   }

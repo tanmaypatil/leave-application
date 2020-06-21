@@ -306,15 +306,6 @@ export default {
                 result.data.insert_leave_app_leave_applications
                   .affected_rows === 1
               ) {
-                    this.$bvModal.show("bv-modal-example");
-                    console.log("before showing toast");
-                    /*
-                    // Show success message to the user.
-                    this.$bvToast.toast(`Leave applied successfully`, {
-                    title: "Leave Apply confirmation",
-                    autoHideDelay: 5000,
-                    appendToast: true
-                    });*/
                   // update the leave balance
                   this.update_leave_balance(); 
                
