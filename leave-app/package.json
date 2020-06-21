@@ -5,12 +5,14 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "test" : "mocha test/*.js"
   },
   "dependencies": {
     "bootstrap": "^4.5.0",
     "bootstrap-vue": "^2.15.0",
     "core-js": "^3.6.5",
+    "mocha": "^8.0.1",
     "moment": "^2.26.0",
     "vue": "^2.6.11"
   },

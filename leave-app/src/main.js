@@ -1,7 +1,9 @@
 import Vue from 'vue'
 
-
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import moment from 'moment'
+
+Object.defineProperty(Vue.prototype, '$moment', { value: moment });
 
 // Install BootstrapVue
 Vue.use(BootstrapVue);
