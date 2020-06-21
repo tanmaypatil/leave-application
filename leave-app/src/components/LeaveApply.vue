@@ -2,8 +2,8 @@
   <div id="leave-apply">
     <b-card no-body>
       <b-row>
-        <b-col></b-col>
-        <b-col>
+       
+        <b-col cols="4">
           <label for="leave-frdatepicker">Leave from date</label>
           <b-form-datepicker
             id="leave-frdatepicker"
@@ -32,7 +32,7 @@
           ></b-form-select>
           <b-button v-on:click="apply" class="mt-4" pill variant="primary">Apply Leave</b-button>
         </b-col>
-        <b-col cols="6">
+        <b-col cols="8">
           <b-card-body title="Leave Information">
             <b-card-text>
               <label for="error-panel">Errors:</label>
@@ -306,6 +306,7 @@ export default {
                 result.data.insert_leave_app_leave_applications
                   .affected_rows === 1
               ) {
+
                   // update the leave balance
                   this.update_leave_balance(); 
                

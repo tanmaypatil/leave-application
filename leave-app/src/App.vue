@@ -1,13 +1,20 @@
 <template>
   <div id="app">
-    <h1>Apply Leave</h1>
-    <leave-apply :key="componentKey"  v-on:ChangeView="this.forceRerender" ></leave-apply>
-       <b-modal id="bv-modal-example" hide-footer>
+    <h1>Leave Application </h1>
+     <b-card no-body>
+    <b-tabs pills card vertical>
+      <b-tab title="Apply Leave " active> <leave-apply :key="componentKey" v-on:ChangeView="this.forceRerender"></leave-apply></b-tab>
+      <b-tab title="Approve leave"><b-card-text>Tab contents 2</b-card-text></b-tab>
+      <b-tab title="Tab 3"><b-card-text>Tab contents 3</b-card-text></b-tab>
+    </b-tabs>
+  </b-card>
+   
+    <b-modal id="bv-modal-example" hide-footer>
       <div class="d-block text-center">
-      <h3>Leave applied successfully</h3>
-    </div>
-    <b-button class="mt-3" block @click="$bvModal.hide('bv-modal-example')">Close Me</b-button>
-  </b-modal>
+        <h3>Leave applied successfully</h3>
+      </div>
+      <b-button class="mt-3" block @click="$bvModal.hide('bv-modal-example')">Close Me</b-button>
+    </b-modal>
   </div>
 </template>
 
