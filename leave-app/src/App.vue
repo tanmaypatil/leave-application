@@ -4,7 +4,7 @@
      <b-card no-body>
     <b-tabs pills card vertical>
       <b-tab title="Apply Leave " active> <leave-apply :key="componentKey" v-on:ChangeView="this.forceRerender"></leave-apply></b-tab>
-      <b-tab title="Approve leave"><b-card-text>Tab contents 2</b-card-text></b-tab>
+      <b-tab title="Approve leave"> <leave-approve> </leave-approve> </b-tab>
       <b-tab title="Tab 3"><b-card-text>Tab contents 3</b-card-text></b-tab>
     </b-tabs>
   </b-card>
@@ -20,11 +20,13 @@
 
 <script>
 import LeaveApply from "./components/LeaveApply.vue";
+import LeaveApprove from "./components/LeaveApprove.vue";
 
 export default {
   name: "App",
   components: {
-    LeaveApply
+    LeaveApply,
+    LeaveApprove
   },
   data() {
     return {
