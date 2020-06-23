@@ -28,9 +28,10 @@ export default {
   name: "leave-approve",
   data() {
     return {
+      user_id: 1,
       selectMode: "multi",
       items: [],
-      fields: ["selected", "from_date", "to_date", "working_days"],
+      fields: ["selected", "emp_name","from_date", "to_date", "working_days","reason"],
       selected: []
     };
   },
@@ -40,6 +41,7 @@ export default {
     }
   },
   created() {
+    /*
     let row = {};
     row.from_date = "2020-02-02";
     row.to_date = "2020-02-03";
@@ -51,6 +53,64 @@ export default {
     row.to_date = "2020-02-06";
     row.working_days = 3;
     this.items.push(row);
+    */
+
+    let query = ` query leaveTobeApproved($mgr_id: Int) {
+	leave_app_leave_applications(
+		where: {
+			_and: [
+				{ employee: { employee: { id: { _eq: $mgr_id } } } }
+				{ approved_by: { _is_null: true } }
+			]
+		}
+	) {
+    from_date
+    to_date
+    working_days
+    reason
+		approved_by
+		emp_id
+		reason
+		employee {
+			emp_name
+			manager: employee {
+				manager_name: emp_name
+				manager_id: id
+			}
+		}
+	}
+} `;
+
+    let variables = {
+      mgr_id: this.user_id
+    };
+
+    const url = "http://localhost:8080/v1/graphql";
+    const opts = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: query, variables: variables })
+    };
+
+    fetch(url, opts)
+      .then(res => res.json())
+      .then(result => {
+        if (result.data && result.data.leave_app_leave_applications) {
+          for (let leave of result.data.leave_app_leave_applications) {
+            let row = {};
+            row.emp_name = leave.employee.emp_name;
+            row.from_date = leave.from_date;
+            row.to_date = leave.to_date;
+            row.working_days = leave.working_days;
+            row.reason = leave.reason;
+           
+            this.items.push(row);
+          }
+        }
+      })
+      .catch(error => {
+        console.log("error is " + error);
+      });
   }
 };
 </script>
