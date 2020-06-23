@@ -40,21 +40,8 @@ export default {
       this.selected = items;
     }
   },
+  // Fetch leave to be approved for the manager.
   created() {
-    /*
-    let row = {};
-    row.from_date = "2020-02-02";
-    row.to_date = "2020-02-03";
-    row.working_days = 2;
-    this.items.push(row);
-
-    row = {};
-    row.from_date = "2020-02-04";
-    row.to_date = "2020-02-06";
-    row.working_days = 3;
-    this.items.push(row);
-    */
-
     let query = ` query leaveTobeApproved($mgr_id: Int) {
 	leave_app_leave_applications(
 		where: {
