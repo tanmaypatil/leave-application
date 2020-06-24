@@ -59,12 +59,6 @@
         </b-col>
       </b-row>
     </b-card>
-    <b-modal id="bv-modal-example" hide-footer>
-      <div class="d-block text-center">
-      <h3>Leave applied successfully</h3>
-    </div>
-    <b-button class="mt-3" block @click="$bvModal.hide('bv-modal-example')">Close Me</b-button>
-  </b-modal>
   </div>
   
 </template>

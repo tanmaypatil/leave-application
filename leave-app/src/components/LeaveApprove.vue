@@ -20,6 +20,7 @@
         </template>
       </template>
     </b-table>
+      <b-button v-on:click="approve" class="mt-4" pill variant="primary">Approve Leave</b-button>
   </div>
 </template>
 
@@ -38,7 +39,26 @@ export default {
   methods: {
     onRowSelected(items) {
       this.selected = items;
+    },
+    approve() {
+      console.dir(this.selected , { colors : true , depth : null});
+      for(let leave_record of this.selected) {
+        update_leave(leave_record,this.user_id);
+      }
     }
+  },
+  update_leave(leave_record , approver_id) {
+    let query = 
+    `mutation approve_leave($leave_id: Int, $approver_id: Int) {
+	     update_leave_app_leave_applications(
+		   _set: { approved_by: $approver_id }
+		   where: { id: { _eq: $leave_id } }
+       )
+       {
+		      affected_rows
+	     }
+    }` ;
+
   },
   // Fetch leave to be approved for the manager.
   created() {
@@ -51,6 +71,7 @@ export default {
 			]
 		}
 	) {
+    id
     from_date
     to_date
     working_days
@@ -85,6 +106,7 @@ export default {
         if (result.data && result.data.leave_app_leave_applications) {
           for (let leave of result.data.leave_app_leave_applications) {
             let row = {};
+            row.id = leave.id;
             row.emp_name = leave.employee.emp_name;
             row.from_date = leave.from_date;
             row.to_date = leave.to_date;
@@ -100,4 +122,5 @@ export default {
       });
   }
 };
+
 </script>
