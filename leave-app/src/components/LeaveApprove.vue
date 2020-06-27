@@ -20,7 +20,7 @@
         </template>
       </template>
     </b-table>
-      <b-button v-on:click="approve" class="mt-4" pill variant="primary">Approve Leave</b-button>
+    <b-button v-on:click="approve" class="mt-4" pill variant="primary">Approve Leave</b-button>
   </div>
 </template>
 
@@ -32,7 +32,14 @@ export default {
       user_id: 1,
       selectMode: "multi",
       items: [],
-      fields: ["selected", "emp_name","from_date", "to_date", "working_days","reason"],
+      fields: [
+        "selected",
+        "emp_name",
+        "from_date",
+        "to_date",
+        "working_days",
+        "reason"
+      ],
       selected: []
     };
   },
@@ -41,25 +48,59 @@ export default {
       this.selected = items;
     },
     approve() {
-      console.dir(this.selected , { colors : true , depth : null});
-      for(let leave_record of this.selected) {
-        update_leave(leave_record,this.user_id);
+      console.dir(this.selected, { colors: true, depth: null });
+      // update leave for all selected records.
+      for (let leave_record of this.selected) {
+        this.update_leave(leave_record.id, this.user_id);
       }
+    },
+    update_leave(leave_id, approver_id) {
+      console.log("approving the leave  [ " +leave_id+ " ] ");
+      let query = `mutation approve_leave($leave_id: Int, $approver_id: Int) {
+	        update_leave_app_leave_applications(
+		      _set: { approved_by: $approver_id }
+		      where: { id: { _eq: $leave_id } }
+          )
+          {
+		         affected_rows
+	        }
+        }`;
+
+      /* Input to graphql query 
+      1) specific leave id
+      2) approver id to update against the leave*/
+
+      let variables = {
+        leave_id: leave_id,
+        approver_id: approver_id
+      };
+
+      // update the leave as approved for a specific leave record
+      const url = "http://localhost:8080/v1/graphql";
+      const opts = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: query, variables: variables })
+      };
+
+      // graphql update query check for number of records to check on success
+      fetch(url, opts)
+        .then(res => res.json())
+        .then(result => {
+          if (result.data && result.data.update_leave_app_leave_applications) {
+            if (result.data.update_leave_app_leave_applications.affected_rows == 1) {
+              // update successfully  , pass event to parent
+              console.log("leave approved");
+              this.$emit("ChangeLeaveApproveView");
+            }
+          }
+        })
+        .catch(error => {
+          console.log("error is " + error);
+        });
     }
   },
-  update_leave(leave_record , approver_id) {
-    let query = 
-    `mutation approve_leave($leave_id: Int, $approver_id: Int) {
-	     update_leave_app_leave_applications(
-		   _set: { approved_by: $approver_id }
-		   where: { id: { _eq: $leave_id } }
-       )
-       {
-		      affected_rows
-	     }
-    }` ;
 
-  },
   // Fetch leave to be approved for the manager.
   created() {
     let query = ` query leaveTobeApproved($mgr_id: Int) {
@@ -88,11 +129,10 @@ export default {
 		}
 	}
 } `;
-
+    // we need to show the leaves which has to be approved by manager.
     let variables = {
       mgr_id: this.user_id
     };
-
     const url = "http://localhost:8080/v1/graphql";
     const opts = {
       method: "POST",
@@ -112,7 +152,7 @@ export default {
             row.to_date = leave.to_date;
             row.working_days = leave.working_days;
             row.reason = leave.reason;
-           
+
             this.items.push(row);
           }
         }
@@ -122,5 +162,4 @@ export default {
       });
   }
 };
-
 </script>
