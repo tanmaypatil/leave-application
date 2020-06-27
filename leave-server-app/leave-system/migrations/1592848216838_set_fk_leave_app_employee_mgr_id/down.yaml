@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: alter table "leave_app"."employee" drop constraint "employee_mgr_id_fkey";
+  type: run_sql

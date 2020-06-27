@@ -1,0 +1,19 @@
+query leaveTobeApproved ( $mgr_id : Int) {
+  leave_app_leave_applications (where : { _and : [
+    { employee : {employee : {id : { _eq : $mgr_id }}}},
+    { approved_by : {_is_null: true} }
+    ]}
+    ) {
+    
+    approved_by
+    emp_id
+    reason
+    employee {
+      emp_name
+      manager : employee {
+       manager_name : emp_name
+       manager_id : id
+      }
+    }
+  }
+}

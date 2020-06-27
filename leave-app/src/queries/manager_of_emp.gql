@@ -1,0 +1,12 @@
+query ManagerOfEmployee {
+  leave_app_employee {
+    id
+    mgr_id
+    emp_name
+    status
+    employee {
+       manager_id : id
+       manager_name : emp_name
+    }
+  }
+}
