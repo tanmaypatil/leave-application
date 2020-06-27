@@ -2,7 +2,6 @@
   <div id="leave-apply">
     <b-card no-body>
       <b-row>
-       
         <b-col cols="4">
           <label for="leave-frdatepicker">Leave from date</label>
           <b-form-datepicker
@@ -30,6 +29,14 @@
             size="sm"
             class="mt-3"
           ></b-form-select>
+           <label for="reason">reason of leave</label>
+          <b-form-textarea
+            id="reason"
+            v-model="reason"
+            placeholder="Enter leave reason"
+            rows="3"
+            max-rows="6"
+          ></b-form-textarea>
           <b-button v-on:click="apply" class="mt-4" pill variant="primary">Apply Leave</b-button>
         </b-col>
         <b-col cols="8">
@@ -60,7 +67,6 @@
       </b-row>
     </b-card>
   </div>
-  
 </template>
 
 <script>
@@ -86,6 +92,7 @@ export default {
         { value: "sick_leave", text: "Sick Leave" },
         { value: "earned_leave", text: "Earned Leave" }
       ],
+      reason : "",
       items: []
     };
   },
@@ -105,10 +112,10 @@ export default {
       let new_bal = 0;
       if (this.selected === "sick_leave") {
         new_bal = this.sick_leave_value - this.leave_days_value;
-        console.log("new sick leave bal" +new_bal);
+        console.log("new sick leave bal" + new_bal);
       } else {
         new_bal = this.earned_leave_value - this.leave_days_value;
-         console.log("new earned leave bal" +new_bal);
+        console.log("new earned leave bal" + new_bal);
       }
       let variables = {
         bal: new_bal,
@@ -141,8 +148,7 @@ export default {
                 this.earned_leave_value = new_bal;
               }
               // emit a event to parent to rerender the component
-              this.$emit('ChangeView');
-              
+              this.$emit("ChangeView");
             }
           }
         })
@@ -246,8 +252,8 @@ export default {
     apply: function() {
       // Call mutation to add leave to the employee
       const query = `
-      mutation apply_leave($from_date : date ,$to_date : date , $type : String , $emp_id : Int,$working_days : Int) {
-      insert_leave_app_leave_applications(objects: {from_date: $from_date, to_date: $to_date, type: $type, emp_id: $emp_id , working_days : $working_days}){
+      mutation apply_leave($from_date : date ,$to_date : date , $type : String , $emp_id : Int,$working_days : Int , $reason : String ) {
+      insert_leave_app_leave_applications(objects: {from_date: $from_date, to_date: $to_date, type: $type, emp_id: $emp_id , working_days : $working_days , reason : $reason  }){
          returning {
           id
         }
@@ -279,7 +285,8 @@ export default {
           to_date: this.todate,
           type: this.selected,
           working_days: leave_days,
-          emp_id: this.user_id
+          emp_id: this.user_id,
+          reason : this.reason
         };
         const url = "http://localhost:8080/v1/graphql";
         const opts = {
@@ -300,10 +307,8 @@ export default {
                 result.data.insert_leave_app_leave_applications
                   .affected_rows === 1
               ) {
-
-                  // update the leave balance
-                  this.update_leave_balance(); 
-               
+                // update the leave balance
+                this.update_leave_balance();
               }
             }
           })
@@ -367,7 +372,7 @@ export default {
           leave_obj = {};
           leave_obj.from_date = leave.from_date;
           leave_obj.to_date = leave.to_date;
-          leave_obj.total_leaves = leave.working_days ;
+          leave_obj.total_leaves = leave.working_days;
           leave_obj.type = leave.type;
           if (leave.employeeByApprovedBy) {
             leave_obj.approved_by = leave.employeeByApprovedBy.emp_name;
