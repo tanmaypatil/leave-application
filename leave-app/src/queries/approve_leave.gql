@@ -1,0 +1,11 @@
+mutation approve_leave($leave_id: Int, $approver_id: Int) {
+	update_leave_app_leave_applications(_set: {
+		approved_by: $approver_id
+	}, where: {
+		id: {
+			_eq: $leave_id
+		}
+	}) {
+		affected_rows
+	}
+}
