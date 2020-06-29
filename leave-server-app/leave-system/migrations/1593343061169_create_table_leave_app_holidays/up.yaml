@@ -1,0 +1,20 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: "CREATE TABLE \"leave_app\".\"holidays\"(\"id\" serial NOT NULL, \"date\"
+      date NOT NULL, \"description\" text NOT NULL, \"location\" text NOT NULL, \"optional\"
+      boolean NOT NULL, \"created_at\" timestamptz NOT NULL DEFAULT now(), \"updated_at\"
+      timestamptz NOT NULL DEFAULT now(), \"entity_id\" text NOT NULL, PRIMARY KEY
+      (\"id\") , UNIQUE (\"id\")); COMMENT ON TABLE \"leave_app\".\"holidays\" IS
+      E'holiday list for the corportation';\nCREATE OR REPLACE FUNCTION \"leave_app\".\"set_current_timestamp_updated_at\"()\nRETURNS
+      TRIGGER AS $$\nDECLARE\n  _new record;\nBEGIN\n  _new := NEW;\n  _new.\"updated_at\"
+      = NOW();\n  RETURN _new;\nEND;\n$$ LANGUAGE plpgsql;\nCREATE TRIGGER \"set_leave_app_holidays_updated_at\"\nBEFORE
+      UPDATE ON \"leave_app\".\"holidays\"\nFOR EACH ROW\nEXECUTE PROCEDURE \"leave_app\".\"set_current_timestamp_updated_at\"();\nCOMMENT
+      ON TRIGGER \"set_leave_app_holidays_updated_at\" ON \"leave_app\".\"holidays\"
+      \nIS 'trigger to set value of column \"updated_at\" to current timestamp on
+      row update';"
+  type: run_sql
+- args:
+    name: holidays
+    schema: leave_app
+  type: add_existing_table_or_view

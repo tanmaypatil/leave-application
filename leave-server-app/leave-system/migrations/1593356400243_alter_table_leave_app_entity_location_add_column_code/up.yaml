@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "leave_app"."entity_location" ADD COLUMN "code" text NULL;
+  type: run_sql

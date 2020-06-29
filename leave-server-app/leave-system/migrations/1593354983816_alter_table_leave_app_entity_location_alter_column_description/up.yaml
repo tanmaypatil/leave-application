@@ -1,0 +1,6 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: alter table "leave_app"."entity_location" rename column "description" to
+      "name";
+  type: run_sql

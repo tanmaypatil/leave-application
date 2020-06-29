@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "leave_app"."holidays" DROP COLUMN "location_code" CASCADE;
+  type: run_sql
