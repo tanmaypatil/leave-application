@@ -2,7 +2,7 @@
   <div id="app">
     <h1>Leave Application </h1>
      <b-card no-body>
-    <b-tabs pills card vertical>
+    <b-tabs v-on:activate-tab="this.switchTab" pills card vertical>
       <b-tab title="Apply Leave " active> <leave-apply :key="componentKey" v-on:ChangeView="this.forceRerender"></leave-apply></b-tab>
       <b-tab title="Approve leave"> <leave-approve :key="approveKey" v-on:ChangeLeaveApproveView="this.reRenderApproveLeave" > </leave-approve> </b-tab>
       <b-tab title="Holidays"><b-card-text>Holiday List</b-card-text></b-tab>
@@ -36,6 +36,18 @@ export default {
     };
   },
   methods: {
+    switchTab(newTabIndex) {
+      if(newTabIndex === 0 ) {
+        console.log("leave apply tab clicked");
+        this.componentKey++ ;
+      }
+      else if (newTabIndex === 1 ) {
+        console.log("leave approve tab clicked");
+        this.approveKey ++;
+
+      }
+
+    },
     forceRerender() {
       console.log("Rerender the leave application display");
       this.message = "Leave applied succesfully";
