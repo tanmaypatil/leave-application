@@ -1,0 +1,9 @@
+{
+    "holiday_array": [{
+        "date": "2020-02-21",
+        "optional": false,
+        "description": "Maha Shivratri",
+        "location_codes": ["PUN", "HYD"]
+    }
+    ]
+}
