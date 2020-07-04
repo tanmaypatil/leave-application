@@ -5,7 +5,7 @@
     <b-tabs v-on:activate-tab="this.switchTab" pills card vertical>
       <b-tab title="Apply Leave " active> <leave-apply :key="componentKey" v-on:ChangeView="this.forceRerender"></leave-apply></b-tab>
       <b-tab title="Approve leave"> <leave-approve :key="approveKey" v-on:ChangeLeaveApproveView="this.reRenderApproveLeave" > </leave-approve> </b-tab>
-      <b-tab title="Holidays"><b-card-text>Holiday List</b-card-text></b-tab>
+      <b-tab title="Holidays"><holidays :key="holidayKey"> </holidays></b-tab>
     </b-tabs>
   </b-card>
    
@@ -21,18 +21,21 @@
 <script>
 import LeaveApply from "./components/LeaveApply.vue";
 import LeaveApprove from "./components/LeaveApprove.vue";
+import Holidays from './components/Holidays.vue';
 
 export default {
   name: "App",
   components: {
     LeaveApply,
-    LeaveApprove
+    LeaveApprove,
+    Holidays
   },
   data() {
     return {
       message : "",
       componentKey: 0,
-      approveKey : 0
+      approveKey : 0,
+      holidayKey : 0
     };
   },
   methods: {

@@ -1,0 +1,6 @@
+- args:
+    relationship: employees
+    table:
+      name: entity_location
+      schema: leave_app
+  type: drop_relationship

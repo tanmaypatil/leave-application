@@ -1,0 +1,8 @@
+- args:
+    name: entity_location
+    table:
+      name: employee
+      schema: leave_app
+    using:
+      foreign_key_constraint_on: location_id
+  type: create_object_relationship
