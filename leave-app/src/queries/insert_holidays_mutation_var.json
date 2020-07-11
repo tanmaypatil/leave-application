@@ -1,0 +1,198 @@
+{
+    "holiday_array": [
+        {
+            "date": "2020-02-21",
+            "optional": false,
+            "description": "Maha Shivratri",
+            "location_codes": [
+                "PUN",
+                "HYD"
+            ],
+            "entity_id": 3
+        },
+        {
+            "date": "2020-03-10",
+            "optional": false,
+            "description": "Holi",
+            "location_codes": [
+                "PUN",
+                "HYD"
+            ],
+            "entity_id": 3
+        },
+        {
+            "date": "2020-03-25",
+            "optional": false,
+            "description": "Gudi padwa",
+            "location_codes": [
+                "PUN"
+            ],
+            "entity_id": 3
+        },
+        {
+            "date": "2020-04-02",
+            "optional": false,
+            "description": "Ram Navami",
+            "location_codes": [
+                "PUN"
+            ],
+            "entity_id": 3
+        },
+        {
+            "date": "2020-04-10",
+            "optional": false,
+            "description": "Good Friday",
+            "location_codes": [
+                "ALL"
+            ],
+            "entity_id": 3
+        },
+        {
+            "date": "2020-04-15",
+            "optional": false,
+            "description": "Ambedkar Jayanti",
+            "location_codes": [
+                "ALL"
+            ],
+            "entity_id": 3
+        },
+        {
+            "date": "2020-08-22",
+            "optional": false,
+            "description": "Ganesh Jayanti",
+            "location_codes": [
+                "ALL"
+            ],
+            "entity_id": 3
+        },
+        {
+            "date": "2020-10-02",
+            "optional": false,
+            "description": "Gandhi Jayanti",
+            "location_codes": [
+                "ALL"
+            ],
+            "entity_id": 3
+        },
+        {
+            "date": "2020-11-16",
+            "optional": false,
+            "description": "Bhai Dooj",
+            "location_codes": [
+                "ALL"
+            ],
+            "entity_id": 3
+        },
+        {
+            "date": "2020-12-25",
+            "optional": false,
+            "description": "Christmas Day",
+            "location_codes": [
+                "ALL"
+            ],
+            "entity_id": 3
+        },
+        {
+            "date": "2020-02-21",
+            "optional": false,
+            "description": "Maha Shivratri",
+            "location_codes": [
+                "MUM"
+            ],
+            "entity_id": 4
+        },
+        {
+            "date": "2020-03-10",
+            "optional": false,
+            "description": "Holi",
+            "location_codes": [
+                "MUM",
+                "DEL"
+            ],
+            "entity_id": 4
+        },
+        {
+            "date": "2020-03-25",
+            "optional": false,
+            "description": "Gudi padwa",
+            "location_codes": [
+                "MUM"
+            ],
+            "entity_id": 4
+        },
+        {
+            "date": "2020-04-02",
+            "optional": false,
+            "description": "Ram Navami",
+            "location_codes": [
+                "MUM",
+                "DEL"
+            ],
+            "entity_id": 4
+        },
+        {
+            "date": "2020-04-10",
+            "optional": false,
+            "description": "Good Friday",
+            "location_codes": [
+                "ALL"
+            ],
+            "entity_id": 4
+        },
+        {
+            "date": "2020-04-15",
+            "optional": false,
+            "description": "Ambedkar Jayanti",
+            "location_codes": [
+                "ALL"
+            ],
+            "entity_id": 4
+        },
+        {
+            "date": "2020-08-22",
+            "optional": false,
+            "description": "Ganesh Jayanti",
+            "location_codes": [
+                "MUM"
+            ],
+            "entity_id": 4
+        },
+        {
+            "date": "2020-10-02",
+            "optional": false,
+            "description": "Gandhi Jayanti",
+            "location_codes": [
+                "ALL"
+            ],
+            "entity_id": 4
+        },
+        {
+            "date": "2020-11-16",
+            "optional": false,
+            "description": "Bhai Dooj",
+            "location_codes": [
+                "ALL"
+            ],
+            "entity_id": 4
+        },
+        {
+            "date": "2020-11-16",
+            "optional": false,
+            "description": "Guru Nank Jayanti",
+            "location_codes": [
+                "DEL",
+                "KOL"
+            ],
+            "entity_id": 4
+        },
+        {
+            "date": "2020-12-25",
+            "optional": false,
+            "description": "Christmas Day",
+            "location_codes": [
+                "ALL"
+            ],
+            "entity_id": 4
+        }
+    ]
+}

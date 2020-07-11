@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "leave_app"."employee" DROP COLUMN "location_id";
+  type: run_sql

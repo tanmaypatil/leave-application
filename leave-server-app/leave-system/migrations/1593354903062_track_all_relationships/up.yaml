@@ -1,0 +1,40 @@
+- args:
+    name: entity
+    table:
+      name: holidays
+      schema: leave_app
+    using:
+      foreign_key_constraint_on: entity_id
+  type: create_object_relationship
+- args:
+    name: holidays
+    table:
+      name: entity
+      schema: leave_app
+    using:
+      foreign_key_constraint_on:
+        column: entity_id
+        table:
+          name: holidays
+          schema: leave_app
+  type: create_array_relationship
+- args:
+    name: entity_locations
+    table:
+      name: entity
+      schema: leave_app
+    using:
+      foreign_key_constraint_on:
+        column: entity_id
+        table:
+          name: entity_location
+          schema: leave_app
+  type: create_array_relationship
+- args:
+    name: entity
+    table:
+      name: entity_location
+      schema: leave_app
+    using:
+      foreign_key_constraint_on: entity_id
+  type: create_object_relationship

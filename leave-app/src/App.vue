@@ -2,10 +2,10 @@
   <div id="app">
     <h1>Leave Application </h1>
      <b-card no-body>
-    <b-tabs pills card vertical>
+    <b-tabs v-on:activate-tab="this.switchTab" pills card vertical>
       <b-tab title="Apply Leave " active> <leave-apply :key="componentKey" v-on:ChangeView="this.forceRerender"></leave-apply></b-tab>
       <b-tab title="Approve leave"> <leave-approve :key="approveKey" v-on:ChangeLeaveApproveView="this.reRenderApproveLeave" > </leave-approve> </b-tab>
-      <b-tab title="Tab 3"><b-card-text>Tab contents 3</b-card-text></b-tab>
+      <b-tab title="Holidays"><holidays :key="holidayKey"> </holidays></b-tab>
     </b-tabs>
   </b-card>
    
@@ -21,21 +21,36 @@
 <script>
 import LeaveApply from "./components/LeaveApply.vue";
 import LeaveApprove from "./components/LeaveApprove.vue";
+import Holidays from './components/Holidays.vue';
 
 export default {
   name: "App",
   components: {
     LeaveApply,
-    LeaveApprove
+    LeaveApprove,
+    Holidays
   },
   data() {
     return {
       message : "",
       componentKey: 0,
-      approveKey : 0
+      approveKey : 0,
+      holidayKey : 0
     };
   },
   methods: {
+    switchTab(newTabIndex) {
+      if(newTabIndex === 0 ) {
+        console.log("leave apply tab clicked");
+        this.componentKey++ ;
+      }
+      else if (newTabIndex === 1 ) {
+        console.log("leave approve tab clicked");
+        this.approveKey ++;
+
+      }
+
+    },
     forceRerender() {
       console.log("Rerender the leave application display");
       this.message = "Leave applied succesfully";

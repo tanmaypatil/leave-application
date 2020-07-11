@@ -1,0 +1,12 @@
+- args:
+    name: employees
+    table:
+      name: entity_location
+      schema: leave_app
+    using:
+      foreign_key_constraint_on:
+        column: location_id
+        table:
+          name: employee
+          schema: leave_app
+  type: create_array_relationship

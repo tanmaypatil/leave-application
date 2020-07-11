@@ -1,0 +1,5 @@
+mutation holiday_insert($holiday_array: [leave_app_holidays_insert_input!]!) {
+  insert_leave_app_holidays(objects: $holiday_array) {
+    affected_rows
+  }
+}

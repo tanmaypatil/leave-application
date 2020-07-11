@@ -1,0 +1,10 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "leave_app"."holidays" ADD COLUMN "location" int4;
+  type: run_sql
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "leave_app"."holidays" ALTER COLUMN "location" DROP NOT NULL;
+  type: run_sql

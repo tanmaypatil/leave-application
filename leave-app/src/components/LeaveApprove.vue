@@ -20,7 +20,7 @@
         </template>
       </template>
     </b-table>
-    <b-button v-on:click="approve" class="mt-4" pill variant="primary">Approve Leave</b-button>
+    <b-button v-on:click="approve" class="mt-4" :disabled="approveDisabled" pill variant="primary">Approve Leave</b-button>
   </div>
 </template>
 
@@ -40,7 +40,8 @@ export default {
         "working_days",
         "reason"
       ],
-      selected: []
+      selected: [],
+      approveDisabled : false
     };
   },
   methods: {
@@ -152,8 +153,10 @@ export default {
             row.to_date = leave.to_date;
             row.working_days = leave.working_days;
             row.reason = leave.reason;
-
             this.items.push(row);
+          }
+          if ( this.items.length === 0 ) {
+            this.approveDisabled = true;
           }
         }
       })

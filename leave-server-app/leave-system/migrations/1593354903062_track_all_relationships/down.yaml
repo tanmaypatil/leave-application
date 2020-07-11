@@ -1,0 +1,24 @@
+- args:
+    relationship: entity
+    table:
+      name: holidays
+      schema: leave_app
+  type: drop_relationship
+- args:
+    relationship: holidays
+    table:
+      name: entity
+      schema: leave_app
+  type: drop_relationship
+- args:
+    relationship: entity_locations
+    table:
+      name: entity
+      schema: leave_app
+  type: drop_relationship
+- args:
+    relationship: entity
+    table:
+      name: entity_location
+      schema: leave_app
+  type: drop_relationship

@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "leave_app"."entity" DROP COLUMN "short_name";
+  type: run_sql
