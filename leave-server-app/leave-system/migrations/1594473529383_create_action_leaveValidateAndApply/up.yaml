@@ -1,0 +1,36 @@
+- args:
+    enums: []
+    input_objects:
+    - description: null
+      fields:
+      - description: null
+        name: fromDate
+        type: String!
+      - description: null
+        name: toDate
+        type: String!
+      name: LeaveInput
+    objects:
+    - description: null
+      fields:
+      - description: null
+        name: message
+        type: String!
+      name: LeaveOutput
+    scalars: []
+  type: set_custom_types
+- args:
+    comment: null
+    definition:
+      arguments:
+      - description: null
+        name: arg1
+        type: LeaveInput!
+      forward_client_headers: false
+      handler: http://host.docker.internal:3000/api/leaveApply
+      headers: []
+      kind: synchronous
+      output_type: LeaveOutput
+      type: mutation
+    name: leaveValidateAndApply
+  type: create_action
