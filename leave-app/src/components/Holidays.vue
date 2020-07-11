@@ -106,7 +106,7 @@ export default {
   },
   methods: {
     daysInMonth: function(month, year) {
-      return new Date(year, month+1, 0);
+      return new Date(year, month, 0);
     },
     dateClass(ymd) {
       let holFound = false;
@@ -120,22 +120,28 @@ export default {
       return holFound === true ? "table-info" : "";
     },
     onContext(ctx) {
+      this.holiday_display = '';
       let curr_date = ctx.activeDate;
       console.log(curr_date);
-      let year = curr_date.getYear();
+      let year = curr_date.getFullYear();
       let month = curr_date.getMonth();
       console.log("month is "+month);
+      console.log("year is "+year);
+      // month starts from zero in javascript, adding 1 for the same.
+      month += 1;
       let high_date = this.daysInMonth(month,year);
-      let low_date = new Date(year,month,1);
-      console.log("high date "+high_date);
-       console.log("low date "+low_date);
+      //let low_date = new Date(year,month,1);
+      let low_date_str = year + "-" + month + "-" + "1";
+      let high_date_str = year + "-" + month + "-" + high_date.getDate();
+      console.log("high date "+high_date_str);
+      console.log("low date "+low_date_str);
        for (let holObj of this.items) {
            let holStr = holObj.date;
-           let holDate = new Date(holStr);
-           console.log("holDate "+holDate);
-           if ( this.$moment(holStr).isBefore(high_date.toISOString()) && this.$moment(holStr).isAfter(low_date.toISOString())) {
+           //let holDate = new Date(holStr);
+           console.log("holStr "+holStr);
+           if ( this.$moment(holStr).isBefore(high_date_str) && this.$moment(holStr).isAfter(low_date_str)) {
                console.log("holiday found "+holStr);
-               this.holiday_display = holStr + " : " + holObj.description + "\n" ;
+               this.holiday_display += holStr + " : " + holObj.description + "\n" ;
            }
        }
 
