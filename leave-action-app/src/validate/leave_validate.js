@@ -1,7 +1,9 @@
 
 let moment = require('moment');
+let work = require('./work_days');
+let util = require('../util/util');
 
-function validate_leave(from_date, to_date) {
+function validate_and_apply_leave(from_date, to_date,user_id) {
     let error = {};
     //check if from_date is later than to_date 
     if (moment(from_date).isAfter(to_date)) {
@@ -38,41 +40,30 @@ function validate_date_weekend(inp_date_str, leave_ind) {
     return error;
 }
 
-function check_leave_balance(from_date,to_date) {
-    let leave_days = work_days(from_date,to_date);
+/* function calculates the working days between from date and to date 
+*  checks also leave balance for the user id.
+*  if balance is insufficient , it will send error back
+*/
+async function check_leave_balance(user_id) {
+    let leave_objs = await work.work_days(from_date,to_date,user_id);
+    let leaves_available = fetch_leaves(user_id);
+
+}
+
+function fetch_leaves(user_id) {
+    let query = util.getGraphQLQueryStr('../graphql/get_user_leave_bal.gql');
+    let variables = {
+        userId : user_id ,
+    }
+    let response = util.executeGraphQLQuery(query,variables);
 
 }
 
 
-/*  calculate work days between from date and to date 
-    1. Account for weekends ( Sat and Sun) 
-    2. check for holidays as per employees' location .
-*/
-function work_days(from_date, to_date,user_id) {
-    let leave_days = 0;
-    let weeks = 0;
-    let date1 = this.$moment(from_date);
-    let date2 = this.$moment(to_date);
-    let totDays = date2.diff(date1, "days");
-    // find out the day of the week - from date
-    // convert to date object
-    let from_dt = new Date(from_date);
-    // find out the day of the week
-    let from_day = from_dt.getDay();
-    /* find out the distance from the first Sunday */
-    let dist = 7 - from_day;
-    if (totDays > dist) {
-      weeks = 1;
-      let excess = totDays - dist;
-      // check out full weeks
-      weeks += Math.floor(excess / 7);
-    }
-    leave_days = totDays - 2 * weeks + 1;
-    return leave_days;
-  }
+
 
 module.exports = {
-    validate_leave: validate_leave,
-    work_days : work_days
+    validate_and_apply_leave: validate_and_apply_leave
+   
 };
 

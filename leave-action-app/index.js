@@ -23,7 +23,7 @@ app.post('/api/leaveApply', jsonParser, function (req, res) {
     console.log("from date " + from_date);
     console.log("to date " + to_date);
     //check if from_date is later than to_date 
-    error = val.validate_leave(from_date, to_date);
+    error = val.validate_and_apply_leave(from_date, to_date,user_id);
     if (error.code) {
         res.status(422).json(error);
     }
