@@ -1,0 +1,11 @@
+query get_user_entity_location($user_id : Int) {
+  leave_app_employee(where: {id: { _eq : $user_id }}) {
+    id
+    emp_name
+    entity_id
+    entity_location {
+      code
+      name
+    }
+  }
+}
