@@ -29,7 +29,7 @@
             size="sm"
             class="mt-3"
           ></b-form-select>
-           <label for="reason">reason of leave</label>
+          <label for="reason">reason of leave</label>
           <b-form-textarea
             id="reason"
             v-model="reason"
@@ -92,13 +92,13 @@ export default {
         { value: "sick_leave", text: "Sick Leave" },
         { value: "earned_leave", text: "Earned Leave" }
       ],
-      reason : "",
+      reason: "",
       items: []
     };
   },
   methods: {
     update_leave_balance: async function() {
-      let update_leave_bal_query = `mutation leave_bal_update($bal : Int , $leave_type : String , $emp_id : Int) {
+      const update_leave_bal_query = `mutation leave_bal_update($bal : Int , $leave_type : String , $emp_id : Int) {
       update_leave_app_employee_leavebal(
        _set: {bal: $bal, leave_type: $leave_type}, where: {emp_id: {_eq: $emp_id} _and : { leave_type: {_eq: $leave_type }}} ) {
           affected_rows
@@ -158,14 +158,14 @@ export default {
     },
     calculate_leave_days: function() {
       console.log("calculate_leave_days function called ");
-      let leave_days = this.work_days(this.fromdate, this.todate);
-      this.leave_days_value = leave_days;
-      this.leave_days = "Leave applied for : " + leave_days + " days";
-      if (this.leave_days_value < 0) {
-        this.leave_to_date_state = false;
-      } else {
-        this.leave_to_date_state = true;
-      }
+      this.work_day_query(this.fromdate, this.todate);
+      //this.leave_days_value = leave_days;
+      // this.leave_days = "Leave applied for : " + leave_days + " days";
+      // if (this.leave_days_value < 0) {
+      //   this.leave_to_date_state = false;
+      // } else {
+      //   this.leave_to_date_state = true;
+      // }
     },
     // function to calculate work days between dates
     work_days: function(from_date, to_date) {
@@ -191,6 +191,52 @@ export default {
       }
       leave_days = totDays - 2 * weeks + 1;
       return leave_days;
+    },
+    /* Function to fetch work days based on 
+       1) weekends 
+       2) company holidays 
+    */
+    work_day_query: function(from_date, to_date) {
+      console.log("work day query");
+      // call hasura action query
+      const work_day_fetch_query = `query workingDays($fromDate : String! , $toDate : String! , $userId : Int!) {
+         getWorkingDays(arg1: {fromDate: $fromDate, toDate: $toDate, userId: $userId}){
+         leaveDays
+        }
+       }`;
+      let variables = {
+          fromDate: from_date,
+          toDate: to_date,
+          userId: this.user_id
+      };
+
+      const url = "http://localhost:8080/v1/graphql";
+      const opts = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: work_day_fetch_query,
+          variables: variables
+        })
+      };
+
+      fetch(url, opts)
+        .then(res => res.json())
+        .then(result => {
+          if (result.data && result.data.getWorkingDays.leaveDays) {
+            this.leave_days_value = result.data.getWorkingDays.leaveDays;
+            this.leave_days = "Leave applied for : " + this.leave_days_value + " days";
+            console.log("leave days value :" + this.leave_days_value);
+            if (this.leave_days_value <= 0) {
+              this.leave_to_date_state = false;
+            } else {
+              this.leave_to_date_state = true;
+            }
+          }
+        })
+        .catch(error => {
+          console.log("Error in work day calculation " + error);
+        });
     },
     // function to validate leave from date and leave to date
     validate_date: function(inp_date_str, leave_ind) {
@@ -286,7 +332,7 @@ export default {
           type: this.selected,
           working_days: leave_days,
           emp_id: this.user_id,
-          reason : this.reason
+          reason: this.reason
         };
         const url = "http://localhost:8080/v1/graphql";
         const opts = {
