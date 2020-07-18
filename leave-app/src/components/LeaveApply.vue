@@ -159,13 +159,6 @@ export default {
     calculate_leave_days: function() {
       console.log("calculate_leave_days function called ");
       this.work_day_query(this.fromdate, this.todate);
-      //this.leave_days_value = leave_days;
-      // this.leave_days = "Leave applied for : " + leave_days + " days";
-      // if (this.leave_days_value < 0) {
-      //   this.leave_to_date_state = false;
-      // } else {
-      //   this.leave_to_date_state = true;
-      // }
     },
     // function to calculate work days between dates
     work_days: function(from_date, to_date) {
@@ -223,7 +216,7 @@ export default {
       fetch(url, opts)
         .then(res => res.json())
         .then(result => {
-          if (result.data && result.data.getWorkingDays.leaveDays) {
+          if (result.data && typeof result.data.getWorkingDays.leaveDays === 'number') {
             this.leave_days_value = result.data.getWorkingDays.leaveDays;
             this.leave_days = "Leave applied for : " + this.leave_days_value + " days";
             console.log("leave days value :" + this.leave_days_value);
