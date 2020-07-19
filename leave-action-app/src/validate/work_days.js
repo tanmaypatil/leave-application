@@ -28,7 +28,7 @@ async function work_days(from_date, to_date, user_id) {
         weeks += Math.floor(excess / 7);
     }
     leave_days = totDays - 2 * weeks + 1 - holiday_cnt;
-    working_days_obj.leaveDays = leave_days;
+    working_days_obj.leaves_requested = leave_days;
 
     return working_days_obj;
 }

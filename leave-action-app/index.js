@@ -14,23 +14,32 @@ var jsonParser = bodyParser.json()
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 // POST /api/leaveApply gets JSON bodies
-app.post('/api/leaveApply', jsonParser, function (req, res) {
+app.post('/api/leaveApply', jsonParser, async function (req, res) {
     // check for from date and to date 
     console.dir(req.body, { depths: null, colors: true });
     let from_date = req.body.input.arg1.fromDate;
     let to_date = req.body.input.arg1.toDate;
-    let error = {};
+    let type_of_leave = req.body.input.arg1.typeOfLeave;
+    let reason = req.body.input.arg1.reason;
+    let user_id = req.body.input.arg1.userId;
+    let retObj = {};
     console.log("from date " + from_date);
     console.log("to date " + to_date);
-    //check if from_date is later than to_date 
-    error = val.validate_and_apply_leave(from_date, to_date,user_id);
-    if (error.code) {
-        res.status(422).json(error);
+    console.log("type of leave " + type_of_leave);
+    try {
+        //check if from_date is later than to_date 
+        retObj = await val.validate_and_apply_leave(from_date, to_date, user_id, type_of_leave, reason);
+        console.log("return value " + JSON.stringify(retObj));
+        if (retObj.error.code != "") {
+            res.status(422).json(retObj.error);
+        }
+        else {
+            res.json(retObj);
+        }
     }
-    else {
-        let message = "leave appiled successfully";
-        res.json({ message: message });
-
+    catch (e) {
+        console.log("System Error in leave application" + e);
+        res.status(500).send(e.message);
     }
 
 });
