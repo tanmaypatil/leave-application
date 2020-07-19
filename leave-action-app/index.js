@@ -34,7 +34,10 @@ app.post('/api/leaveApply', jsonParser, async function (req, res) {
             res.status(422).json(retObj.error);
         }
         else {
-            res.json(retObj);
+            // port to success message format .
+            let finalObj = { };
+            finalObj.message = retObj.message; 
+            res.json(finalObj);
         }
     }
     catch (e) {

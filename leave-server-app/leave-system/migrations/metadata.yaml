@@ -1,0 +1,162 @@
+version: 2
+tables:
+- table:
+    schema: leave_app
+    name: employee
+  object_relationships:
+  - name: employee
+    using:
+      foreign_key_constraint_on: mgr_id
+  - name: entity
+    using:
+      foreign_key_constraint_on: entity_id
+  - name: entity_location
+    using:
+      foreign_key_constraint_on: location_id
+  array_relationships:
+  - name: employee_leavebals
+    using:
+      foreign_key_constraint_on:
+        column: emp_id
+        table:
+          schema: leave_app
+          name: employee_leavebal
+  - name: employees
+    using:
+      foreign_key_constraint_on:
+        column: mgr_id
+        table:
+          schema: leave_app
+          name: employee
+  - name: leave_applications
+    using:
+      foreign_key_constraint_on:
+        column: emp_id
+        table:
+          schema: leave_app
+          name: leave_applications
+  - name: leaveApplicationsByApprovedBy
+    using:
+      foreign_key_constraint_on:
+        column: approved_by
+        table:
+          schema: leave_app
+          name: leave_applications
+- table:
+    schema: leave_app
+    name: employee_leavebal
+  object_relationships:
+  - name: employee
+    using:
+      foreign_key_constraint_on: emp_id
+- table:
+    schema: leave_app
+    name: entity
+  array_relationships:
+  - name: employees
+    using:
+      foreign_key_constraint_on:
+        column: entity_id
+        table:
+          schema: leave_app
+          name: employee
+  - name: entity_locations
+    using:
+      foreign_key_constraint_on:
+        column: entity_id
+        table:
+          schema: leave_app
+          name: entity_location
+  - name: holidays
+    using:
+      foreign_key_constraint_on:
+        column: entity_id
+        table:
+          schema: leave_app
+          name: holidays
+- table:
+    schema: leave_app
+    name: entity_location
+  object_relationships:
+  - name: entity
+    using:
+      foreign_key_constraint_on: entity_id
+  array_relationships:
+  - name: employees
+    using:
+      foreign_key_constraint_on:
+        column: location_id
+        table:
+          schema: leave_app
+          name: employee
+- table:
+    schema: leave_app
+    name: holidays
+  object_relationships:
+  - name: entity
+    using:
+      foreign_key_constraint_on: entity_id
+- table:
+    schema: leave_app
+    name: leave_applications
+  object_relationships:
+  - name: employee
+    using:
+      foreign_key_constraint_on: emp_id
+  - name: employeeByApprovedBy
+    using:
+      foreign_key_constraint_on: approved_by
+- table:
+    schema: leave_app
+    name: manager
+actions:
+- name: getWorkingDays
+  definition:
+    handler: http://host.docker.internal:3000/api/getWorkingDays
+    output_type: WorkingDays
+    arguments:
+    - name: arg1
+      type: DateRange!
+    type: query
+- name: leaveValidateAndApply
+  definition:
+    handler: http://host.docker.internal:3000/api/leaveApply
+    output_type: LeaveOutput
+    arguments:
+    - name: arg1
+      type: LeaveInput!
+    type: mutation
+    kind: synchronous
+custom_types:
+  input_objects:
+  - name: LeaveInput
+    fields:
+    - name: fromDate
+      type: String!
+    - name: toDate
+      type: String!
+    - name: userId
+      type: Int!
+    - name: typeOfLeave
+      type: String!
+    - name: reason
+      type: String!
+  - name: DateRange
+    fields:
+    - name: fromDate
+      type: String!
+    - name: toDate
+      type: String!
+    - name: userId
+      type: Int!
+  objects:
+  - name: LeaveOutput
+    fields:
+    - name: message
+      type: String!
+  - name: WorkingDays
+    fields:
+    - name: leaveDays
+      type: Int!
+    - name: holidays
+      type: '[String]'

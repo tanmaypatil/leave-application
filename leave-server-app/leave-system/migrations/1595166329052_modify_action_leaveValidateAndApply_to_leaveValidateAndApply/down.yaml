@@ -1,0 +1,75 @@
+- args:
+    enums: []
+    input_objects:
+    - description: null
+      fields:
+      - description: null
+        name: fromDate
+        type: String!
+      - description: null
+        name: toDate
+        type: String!
+      - description: null
+        name: userId
+        type: Int!
+      - description: null
+        name: typeOfLeave
+        type: String!
+      - description: null
+        name: reason
+        type: String!
+      name: LeaveInput
+    - description: null
+      fields:
+      - description: null
+        name: fromDate
+        type: String!
+      - description: null
+        name: toDate
+        type: String!
+      - description: null
+        name: userId
+        type: Int!
+      name: DateRange
+    objects:
+    - description: null
+      fields:
+      - arguments: null
+        description: null
+        name: message
+        type: String!
+      - arguments: null
+        description: null
+        name: currentBal
+        type: Int
+      name: LeaveOutput
+      relationships: null
+    - description: null
+      fields:
+      - arguments: null
+        description: null
+        name: leaveDays
+        type: Int!
+      - arguments: null
+        description: null
+        name: holidays
+        type: '[String]'
+      name: WorkingDays
+      relationships: null
+    scalars: []
+  type: set_custom_types
+- args:
+    comment: null
+    definition:
+      arguments:
+      - description: null
+        name: arg1
+        type: LeaveInput!
+      forward_client_headers: false
+      handler: http://host.docker.internal:3000/api/leaveApply
+      headers: []
+      kind: synchronous
+      output_type: LeaveOutput
+      type: mutation
+    name: leaveValidateAndApply
+  type: update_action
