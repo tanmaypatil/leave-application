@@ -47,7 +47,30 @@ async function validate_and_apply_leave(from_date, to_date, user_id, leave_type,
         retObj.error = { code: '' };
     }
     console.log("validate_and_apply_leave " + JSON.stringify(retObj));
+    enrichErrors(retObj,from_date,to_date,leave_type);
     return retObj;
+}
+
+/* 
+   function to enrich error messages for user.
+   when constraint_violation exists - enrich to Leave application already exists.
+*/
+function enrichErrors(retObj,from_date,to_date,leave_type) {
+    if(retObj.error.errorDetails) {
+        let errors = retObj.error.errorDetails;
+        console.log("enrichErrors - "+JSON.stringify(retObj.error.errorDetails));
+        let desc = '';
+        desc = leave_type === 'sick_leave' ? 'Sick' : 'Earned';
+      
+        let code = errors[0].extensions.code;
+        // if it is constraint violation , modify the message saying leave application already exists
+        switch(code) {
+            case 'constraint-violation' :
+                retObj.error.message = `${desc} leave application already exist from ${from_date} to ${to_date} `;
+                break;
+        }
+    }
+
 }
 
 /* function to validate leave from date and leave to date
@@ -138,7 +161,8 @@ async function apply_leave(from_date, to_date, user_id, leave_type, reason, work
         retObj.message = `Leave application unsuccessful from  ${from_date}  to  ${to_date} for ${work_days}`;
         retObj.error = {
             code: 'E0004',
-            message: 'Error occured while saving leave application'
+            message: 'Error occured while saving leave application',
+            errorDetails : response.errors
         };
     }
     else if (response && response.data.insert_leave_app_leave_applications) {
@@ -173,8 +197,7 @@ async function leave_bal_update(user_id, leaves_requested, leaves_available, lea
             retObj.message = 'Leave balance updated correctly';
             retObj.curBal = leave_balance;
         }
-    }
-   
+    } 
     return retObj;
 }
 

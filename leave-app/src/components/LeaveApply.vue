@@ -198,9 +198,9 @@ export default {
         }
        }`;
       let variables = {
-          fromDate: from_date,
-          toDate: to_date,
-          userId: this.user_id
+        fromDate: from_date,
+        toDate: to_date,
+        userId: this.user_id
       };
 
       const url = "http://localhost:8080/v1/graphql";
@@ -216,9 +216,13 @@ export default {
       fetch(url, opts)
         .then(res => res.json())
         .then(result => {
-          if (result.data && typeof result.data.getWorkingDays.leaveDays === 'number') {
+          if (
+            result.data &&
+            typeof result.data.getWorkingDays.leaveDays === "number"
+          ) {
             this.leave_days_value = result.data.getWorkingDays.leaveDays;
-            this.leave_days = "Leave applied for : " + this.leave_days_value + " days";
+            this.leave_days =
+              "Leave applied for : " + this.leave_days_value + " days";
             console.log("leave days value :" + this.leave_days_value);
             if (this.leave_days_value <= 0) {
               this.leave_to_date_state = false;
@@ -289,8 +293,74 @@ export default {
       return err;
     },
     apply: function() {
-      // Call mutation to add leave to the employee
+      /* We will call action api here 
+        1. validation will be called from inside action api 
+        2. balance check will be done by action api
+        3. work_days is also derived by action api
+      */
       const query = `
+         mutation leave_apply_and_validate(
+	          $fromDate: String!
+	          $reason: String!
+	          $toDate: String!
+	          $typeOfLeave: String!
+	          $userId: Int!
+          ) {
+	          leaveValidateAndApply(
+		        arg1: {
+			         fromDate: $fromDate
+			         reason: $reason
+			         toDate: $toDate
+			         typeOfLeave: $typeOfLeave
+			         userId: $userId
+		        }
+	        ) {
+		           message
+	          }
+          }
+        `;
+
+       let variables = {
+          fromDate: this.fromdate,
+          toDate: this.todate,
+          typeOfLeave : this.selected,
+          userId : this.user_id,
+          reason: this.reason
+        };
+
+        const url = "http://localhost:8080/v1/graphql";
+        const opts = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: query, variables: variables })
+        };
+
+        fetch(url, opts)
+          .then(res => res.json())
+          .then(result => {
+            console.log("result --"+JSON.stringify(result));
+              // check for errors
+              if (result.errors) {
+                console.log(JSON.stringify(result.errors));
+                this.error_message  = result.errors[0].message;
+            }
+            else if (result.data 
+            && result.data.leaveValidateAndApply
+                 && result.data.leaveValidateAndApply.message
+              ) {
+                // update the leave balance
+                //this.update_leave_balance();
+                 this.$emit("ChangeView",result.data.leaveValidateAndApply.message);
+              } 
+          })
+          .catch( (errors) => {
+            console.log("errors "+JSON.stringify(errors));
+            this.error_message = errors;
+          });
+      
+
+      // Call mutation to add leave to the employee
+      /*  const query = `
       mutation apply_leave($from_date : date ,$to_date : date , $type : String , $emp_id : Int,$working_days : Int , $reason : String ) {
       insert_leave_app_leave_applications(objects: {from_date: $from_date, to_date: $to_date, type: $type, emp_id: $emp_id , working_days : $working_days , reason : $reason  }){
          returning {
@@ -352,7 +422,7 @@ export default {
             }
           })
           .catch(console.error);
-      }
+      }*/
     }
   },
   // Fetch the leave data for the employee
