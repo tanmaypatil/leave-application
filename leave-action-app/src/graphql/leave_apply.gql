@@ -1,0 +1,24 @@
+mutation apply_leave(
+  $from_date: date
+  $to_date: date
+  $leave_type: String
+  $emp_id: Int
+  $working_days: Int
+  $reason: String
+) {
+  insert_leave_app_leave_applications(
+    objects: {
+      from_date: $from_date
+      to_date: $to_date
+      type: $leave_type
+      emp_id: $emp_id
+      working_days: $working_days
+      reason: $reason
+    }
+  ) {
+    returning {
+      id
+    }
+    affected_rows
+  }
+}

@@ -1,0 +1,8 @@
+mutation leave_apply_and_validate($fromDate: String! ,$reason: String!,$toDate : String!,
+  $typeOfLeave : String!, $userId : Int!  ) 
+{
+  leaveValidateAndApply( arg1: {fromDate: $fromDate , reason: $reason,
+    toDate: $toDate , typeOfLeave: $typeOfLeave , userId: $userId}) {
+    message
+  }
+}

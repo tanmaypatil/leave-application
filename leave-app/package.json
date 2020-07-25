@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test" : "mocha test/*.js"
+    "test": "mocha test/*.js"
   },
   "dependencies": {
     "bootstrap": "^4.5.0",
@@ -14,7 +14,8 @@
     "core-js": "^3.6.5",
     "mocha": "^8.0.1",
     "moment": "^2.26.0",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue-router": "^3.3.4"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.4.0",

@@ -1,0 +1,26 @@
+- args:
+    name: getWorkingDays
+  type: drop_action
+- args:
+    enums: []
+    input_objects:
+    - description: null
+      fields:
+      - description: null
+        name: fromDate
+        type: String!
+      - description: null
+        name: toDate
+        type: String!
+      name: LeaveInput
+    objects:
+    - description: null
+      fields:
+      - arguments: null
+        description: null
+        name: message
+        type: String!
+      name: LeaveOutput
+      relationships: null
+    scalars: []
+  type: set_custom_types

@@ -51,9 +51,10 @@ export default {
       }
 
     },
-    forceRerender() {
+    forceRerender(leaveMessage) {
       console.log("Rerender the leave application display");
-      this.message = "Leave applied succesfully";
+      console.log(leaveMessage);
+      this.message = leaveMessage;
       this.$bvModal.show("bv-modal-example");
    
       this.componentKey += 1;

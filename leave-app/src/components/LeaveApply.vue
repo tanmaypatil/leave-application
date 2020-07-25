@@ -29,7 +29,7 @@
             size="sm"
             class="mt-3"
           ></b-form-select>
-           <label for="reason">reason of leave</label>
+          <label for="reason">reason of leave</label>
           <b-form-textarea
             id="reason"
             v-model="reason"
@@ -59,7 +59,17 @@
                 :value="earned_leave"
               ></b-form-textarea>
               <div>
-                <b-table striped hover :items="items"></b-table>
+                <div class="overflow-auto">
+                  <b-pagination 
+                   v-model="currentPage"
+                   :total-rows="rows"
+                   :per-page="perPage"
+                  ></b-pagination>
+                </div>
+                <b-table striped 
+                :per-page="perPage"
+                :current-page="currentPage"
+                hover :items="items"></b-table>
               </div>
             </b-card-text>
           </b-card-body>
@@ -74,6 +84,8 @@ export default {
   name: "leave-apply",
   data() {
     return {
+      currentPage: 1,
+      perPage : 5,
       user_id: 2,
       error_message: "",
       fromdate: null,
@@ -92,35 +104,36 @@ export default {
         { value: "sick_leave", text: "Sick Leave" },
         { value: "earned_leave", text: "Earned Leave" }
       ],
-      reason : "",
+      reason: "",
       items: []
     };
   },
-  methods: {
-    update_leave_balance: async function() {
-      let update_leave_bal_query = `mutation leave_bal_update($bal : Int , $leave_type : String , $emp_id : Int) {
-      update_leave_app_employee_leavebal(
-       _set: {bal: $bal, leave_type: $leave_type}, where: {emp_id: {_eq: $emp_id} _and : { leave_type: {_eq: $leave_type }}} ) {
-          affected_rows
-          returning {
-             bal
-             leave_type
-          }
-        }
-      }`;
-
-      let new_bal = 0;
-      if (this.selected === "sick_leave") {
-        new_bal = this.sick_leave_value - this.leave_days_value;
-        console.log("new sick leave bal" + new_bal);
-      } else {
-        new_bal = this.earned_leave_value - this.leave_days_value;
-        console.log("new earned leave bal" + new_bal);
+  computed: {
+      rows() {
+        return this.items.length;
       }
+    },
+  methods: {
+    calculate_leave_days: function() {
+      console.log("calculate_leave_days function called ");
+      this.work_day_query(this.fromdate, this.todate);
+    },
+    /* Function to fetch work days based on 
+       1) weekends 
+       2) company holidays 
+    */
+    work_day_query: function(from_date, to_date) {
+      console.log("work day query");
+      // call hasura action query
+      const work_day_fetch_query = `query workingDays($fromDate : String! , $toDate : String! , $userId : Int!) {
+         getWorkingDays(arg1: {fromDate: $fromDate, toDate: $toDate, userId: $userId}){
+         leaveDays
+        }
+       }`;
       let variables = {
-        bal: new_bal,
-        leave_type: this.selected,
-        emp_id: this.user_id
+        fromDate: from_date,
+        toDate: to_date,
+        userId: this.user_id
       };
 
       const url = "http://localhost:8080/v1/graphql";
@@ -128,7 +141,7 @@ export default {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          query: update_leave_bal_query,
+          query: work_day_fetch_query,
           variables: variables
         })
       };
@@ -136,184 +149,105 @@ export default {
       fetch(url, opts)
         .then(res => res.json())
         .then(result => {
-          if (result.data && result.data.update_leave_app_employee_leavebal) {
-            // Leave bal update is successful
-            if (
-              result.data.update_leave_app_employee_leavebal.affected_rows === 1
-            ) {
-              console.log("balance updated successfully");
-              if (this.selected === "sick_leave") {
-                this.sick_leave_value = new_bal;
-              } else {
-                this.earned_leave_value = new_bal;
-              }
-              // emit a event to parent to rerender the component
-              this.$emit("ChangeView");
+          if (
+            result.data &&
+            typeof result.data.getWorkingDays.leaveDays === "number"
+          ) {
+            this.leave_days_value = result.data.getWorkingDays.leaveDays;
+            this.leave_days =
+              "Leave applied for : " + this.leave_days_value + " days";
+            console.log("leave days value :" + this.leave_days_value);
+            if (this.leave_days_value <= 0) {
+              this.leave_to_date_state = false;
+            } else {
+              this.leave_to_date_state = true;
             }
           }
         })
         .catch(error => {
-          console.log("error is " + error.message);
+          console.log("Error in work day calculation " + error);
         });
     },
-    calculate_leave_days: function() {
-      console.log("calculate_leave_days function called ");
-      let leave_days = this.work_days(this.fromdate, this.todate);
-      this.leave_days_value = leave_days;
-      this.leave_days = "Leave applied for : " + leave_days + " days";
-      if (this.leave_days_value < 0) {
-        this.leave_to_date_state = false;
-      } else {
-        this.leave_to_date_state = true;
-      }
-    },
-    // function to calculate work days between dates
-    work_days: function(from_date, to_date) {
-      let leave_days = 0;
-      let weeks = 0;
-      let date1 = this.$moment(from_date);
-      let date2 = this.$moment(to_date);
-      let totDays = date2.diff(date1, "days");
-      // find out the day of the week - from date
-      // convert to date object
-      let from_dt = new Date(from_date);
-      //let to_dt = new Date(to_date);
-      // find out the day of the week
-      let from_day = from_dt.getDay();
-      //let to_day = to_dt.getDay();
-      /* find out the distance from the first Sunday */
-      let dist = 7 - from_day;
-      if (totDays > dist) {
-        weeks = 1;
-        let excess = totDays - dist;
-        // check out full weeks
-        weeks += Math.floor(excess / 7);
-      }
-      leave_days = totDays - 2 * weeks + 1;
-      return leave_days;
-    },
-    // function to validate leave from date and leave to date
-    validate_date: function(inp_date_str, leave_ind) {
-      console.log(inp_date_str);
-      let err = "";
-      let inp_date = new Date(inp_date_str);
-      let day = inp_date.getDay();
-      // It is a weekend , it is already holiday
-      if (day === 0 || day === 6) {
-        err =
-          "Weekend can not be selected for leave " +
-          leave_ind +
-          " :  " +
-          inp_date_str;
-      }
-      return err;
-    },
-    // function to check if employee has leave balance
-    validate_leave_balance: function() {
-      let err = "";
-      console.log("inside validate_leave_balance");
-      console.log(
-        "leave type : " +
-          this.selected +
-          " leave applied for : " +
-          this.leave_days_value
-      );
-      if (this.leave_days_value <= 0) {
-        err =
-          "invalid leave application , Leave to-date : " +
-          this.todate +
-          " needs to be higher than Leave from-date : " +
-          this.fromdate;
-      } else if (
-        this.selected === "sick_leave" &&
-        this.leave_days_value > this.sick_leave_value
-      ) {
-        err =
-          "You do not have sufficient sick leave balance , leave requested : [ " +
-          this.leave_days_value +
-          "] , leave balance :  [ " +
-          this.sick_leave_value +
-          " ]";
-        this.leave_to_date_state = false;
-      } else if (
-        this.selected === "earned_leave" &&
-        this.leave_days_value > this.earned_leave_value
-      ) {
-        err =
-          "You do not have sufficient earned leave balance ,leave requested : [ " +
-          this.leave_days_value +
-          "] , leave balance :  [ " +
-          this.earned_leave_value +
-          " ]";
-        this.leave_to_date_state = false;
-      }
-      return err;
-    },
     apply: function() {
-      // Call mutation to add leave to the employee
+      /* We will call action api here 
+        1. validation will be called from inside action api 
+        2. balance check will be done by action api
+        3. work_days is also derived by action api
+      */
       const query = `
-      mutation apply_leave($from_date : date ,$to_date : date , $type : String , $emp_id : Int,$working_days : Int , $reason : String ) {
-      insert_leave_app_leave_applications(objects: {from_date: $from_date, to_date: $to_date, type: $type, emp_id: $emp_id , working_days : $working_days , reason : $reason  }){
-         returning {
-          id
-        }
-        affected_rows
-      }
-    }`;
-      let errors = [];
-      this.error_message = [];
-      // validate from date
-      let err = this.validate_date(this.fromdate, "from date");
-      if (err != "") errors.push(err);
-      // validate to date
-      err = this.validate_date(this.todate, "to date");
-      if (err != "") errors.push(err);
-      // validate leave balance
-      err = this.validate_leave_balance();
-      if (err != "") errors.push(err);
-      // If only no errors , then proceed with leave application
-      for (let e of errors) {
-        this.error_message = this.error_message + e + "\n";
-      }
-      // if no errors , proceed for leave application
-      if (errors.length === 0) {
-        // Calculate working days , leave needs to be applied for working days
-        let leave_days = this.work_days(this.fromdate, this.todate);
+         mutation leave_apply_and_validate(
+	          $fromDate: String!
+	          $reason: String!
+	          $toDate: String!
+	          $typeOfLeave: String!
+	          $userId: Int!
+          ) {
+	          leaveValidateAndApply(
+		        arg1: {
+			         fromDate: $fromDate
+			         reason: $reason
+			         toDate: $toDate
+			         typeOfLeave: $typeOfLeave
+			         userId: $userId
+		        }
+	        ) {
+		           message
+	          }
+          }
+        `;
 
-        let variables = {
-          from_date: this.fromdate,
-          to_date: this.todate,
-          type: this.selected,
-          working_days: leave_days,
-          emp_id: this.user_id,
-          reason : this.reason
-        };
-        const url = "http://localhost:8080/v1/graphql";
-        const opts = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query: query, variables: variables })
-        };
+      let variables = {
+        fromDate: this.fromdate,
+        toDate: this.todate,
+        typeOfLeave: this.selected,
+        userId: this.user_id,
+        reason: this.reason
+      };
 
-        fetch(url, opts)
-          .then(res => res.json())
-          .then(result => {
-            if (
-              result.data &&
-              result.data.insert_leave_app_leave_applications
-            ) {
-              // Leave application is successful
-              if (
-                result.data.insert_leave_app_leave_applications
-                  .affected_rows === 1
-              ) {
-                // update the leave balance
-                this.update_leave_balance();
-              }
-            }
-          })
-          .catch(console.error);
+      const url = "http://localhost:8080/v1/graphql";
+      const opts = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: query, variables: variables })
+      };
+
+      fetch(url, opts)
+        .then(res => res.json())
+        .then(result => {
+          console.log("result --" + JSON.stringify(result));
+          // check for errors
+          if (result.errors) {
+            console.log(JSON.stringify(result.errors));
+            this.error_message = result.errors[0].message;
+          } else if (
+            result.data &&
+            result.data.leaveValidateAndApply &&
+            result.data.leaveValidateAndApply.message
+          ) {
+            // update the leave balance
+            //this.update_leave_balance();
+            this.$emit("ChangeView", result.data.leaveValidateAndApply.message);
+          }
+        })
+        .catch(errors => {
+          console.log("errors " + JSON.stringify(errors));
+          this.error_message = errors;
+        });
+    },
+    linkGen(pageNum) {
+      console.log("move to page : "+pageNum);
+      let path = '/leave-inquiry/' + pageNum;
+      return {
+        path: path,
+        params: { page_number : pageNum }
       }
+    },
+  },
+  watch: {
+    $route : function ( to, from) {
+      // react to route changes...
+      console.log("route changed to " + to);
+      console.log("route changed from" + from);
     }
   },
   // Fetch the leave data for the employee
