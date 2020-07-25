@@ -3,6 +3,13 @@ let moment = require('moment');
 let work = require('./work_days');
 let util = require('../util/util');
 
+/* Api to perform leave validation and do the following 
+   1. check whether leave is falling on holiday .
+   2. check whether there is sufficient leave balance
+   3. Apply the leave , update leave tables 
+   4. update the leave balance
+*/
+
 async function validate_and_apply_leave(from_date, to_date, user_id, leave_type, reason) {
     let retObj = { error: {} };
     let leaves_requested = 0 ;
@@ -43,12 +50,17 @@ async function validate_and_apply_leave(from_date, to_date, user_id, leave_type,
     }
     // If we have come so far , and error is null , leave application is success
     if ( retObj.error.code == "" ) {
-        retObj.message = `Leave application (${leave_type}) successful from ${from_date} to ${to_date} for ${leaves_requested} day ,current leave balance ${retObj.curBal}`;
+        retObj.message = `Leave application (${leaveDescription(leave_type)}) successful from ${from_date} to ${to_date} for ${leaves_requested} day ,current leave balance ${retObj.curBal}`;
         retObj.error = { code: '' };
     }
     console.log("validate_and_apply_leave " + JSON.stringify(retObj));
     enrichErrors(retObj,from_date,to_date,leave_type);
     return retObj;
+}
+
+// friendly description from internal code to external 
+function leaveDescription(leave_type) {
+    return leave_type === 'sick_leave' ? 'Sick' : 'Earned';
 }
 
 /* 
@@ -59,14 +71,11 @@ function enrichErrors(retObj,from_date,to_date,leave_type) {
     if(retObj.error.errorDetails) {
         let errors = retObj.error.errorDetails;
         console.log("enrichErrors - "+JSON.stringify(retObj.error.errorDetails));
-        let desc = '';
-        desc = leave_type === 'sick_leave' ? 'Sick' : 'Earned';
-      
         let code = errors[0].extensions.code;
         // if it is constraint violation , modify the message saying leave application already exists
         switch(code) {
             case 'constraint-violation' :
-                retObj.error.message = `${desc} leave application already exist from ${from_date} to ${to_date} `;
+                retObj.error.message = `${leaveDescription(leave_type)} leave application already exist from ${from_date} to ${to_date} `;
                 break;
         }
     }

@@ -235,63 +235,6 @@ export default {
           console.log("Error in work day calculation " + error);
         });
     },
-    // function to validate leave from date and leave to date
-    validate_date: function(inp_date_str, leave_ind) {
-      console.log(inp_date_str);
-      let err = "";
-      let inp_date = new Date(inp_date_str);
-      let day = inp_date.getDay();
-      // It is a weekend , it is already holiday
-      if (day === 0 || day === 6) {
-        err =
-          "Weekend can not be selected for leave " +
-          leave_ind +
-          " :  " +
-          inp_date_str;
-      }
-      return err;
-    },
-    // function to check if employee has leave balance
-    validate_leave_balance: function() {
-      let err = "";
-      console.log("inside validate_leave_balance");
-      console.log(
-        "leave type : " +
-          this.selected +
-          " leave applied for : " +
-          this.leave_days_value
-      );
-      if (this.leave_days_value <= 0) {
-        err =
-          "invalid leave application , Leave to-date : " +
-          this.todate +
-          " needs to be higher than Leave from-date : " +
-          this.fromdate;
-      } else if (
-        this.selected === "sick_leave" &&
-        this.leave_days_value > this.sick_leave_value
-      ) {
-        err =
-          "You do not have sufficient sick leave balance , leave requested : [ " +
-          this.leave_days_value +
-          "] , leave balance :  [ " +
-          this.sick_leave_value +
-          " ]";
-        this.leave_to_date_state = false;
-      } else if (
-        this.selected === "earned_leave" &&
-        this.leave_days_value > this.earned_leave_value
-      ) {
-        err =
-          "You do not have sufficient earned leave balance ,leave requested : [ " +
-          this.leave_days_value +
-          "] , leave balance :  [ " +
-          this.earned_leave_value +
-          " ]";
-        this.leave_to_date_state = false;
-      }
-      return err;
-    },
     apply: function() {
       /* We will call action api here 
         1. validation will be called from inside action api 
@@ -356,73 +299,7 @@ export default {
           .catch( (errors) => {
             console.log("errors "+JSON.stringify(errors));
             this.error_message = errors;
-          });
-      
-
-      // Call mutation to add leave to the employee
-      /*  const query = `
-      mutation apply_leave($from_date : date ,$to_date : date , $type : String , $emp_id : Int,$working_days : Int , $reason : String ) {
-      insert_leave_app_leave_applications(objects: {from_date: $from_date, to_date: $to_date, type: $type, emp_id: $emp_id , working_days : $working_days , reason : $reason  }){
-         returning {
-          id
-        }
-        affected_rows
-      }
-    }`;
-      let errors = [];
-      this.error_message = [];
-      // validate from date
-      let err = this.validate_date(this.fromdate, "from date");
-      if (err != "") errors.push(err);
-      // validate to date
-      err = this.validate_date(this.todate, "to date");
-      if (err != "") errors.push(err);
-      // validate leave balance
-      err = this.validate_leave_balance();
-      if (err != "") errors.push(err);
-      // If only no errors , then proceed with leave application
-      for (let e of errors) {
-        this.error_message = this.error_message + e + "\n";
-      }
-      // if no errors , proceed for leave application
-      if (errors.length === 0) {
-        // Calculate working days , leave needs to be applied for working days
-        let leave_days = this.work_days(this.fromdate, this.todate);
-
-        let variables = {
-          from_date: this.fromdate,
-          to_date: this.todate,
-          type: this.selected,
-          working_days: leave_days,
-          emp_id: this.user_id,
-          reason: this.reason
-        };
-        const url = "http://localhost:8080/v1/graphql";
-        const opts = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query: query, variables: variables })
-        };
-
-        fetch(url, opts)
-          .then(res => res.json())
-          .then(result => {
-            if (
-              result.data &&
-              result.data.insert_leave_app_leave_applications
-            ) {
-              // Leave application is successful
-              if (
-                result.data.insert_leave_app_leave_applications
-                  .affected_rows === 1
-              ) {
-                // update the leave balance
-                this.update_leave_balance();
-              }
-            }
-          })
-          .catch(console.error);
-      }*/
+          });      
     }
   },
   // Fetch the leave data for the employee

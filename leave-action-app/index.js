@@ -50,6 +50,9 @@ app.post('/api/leaveApply', jsonParser, async function (req, res) {
 app.post('/api/getWorkingDays', jsonParser, async function (req, res) {
     try {
         let resultJson = await workingday_query(req, res);
+        // Action api , expects leaveDays as property.
+        resultJson.leaveDays = resultJson.leaves_requested;
+        delete resultJson.leaves_requested;
         res.json(resultJson);
     }
     catch (error) {
