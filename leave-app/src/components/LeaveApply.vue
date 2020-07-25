@@ -97,93 +97,9 @@ export default {
     };
   },
   methods: {
-    update_leave_balance: async function() {
-      const update_leave_bal_query = `mutation leave_bal_update($bal : Int , $leave_type : String , $emp_id : Int) {
-      update_leave_app_employee_leavebal(
-       _set: {bal: $bal, leave_type: $leave_type}, where: {emp_id: {_eq: $emp_id} _and : { leave_type: {_eq: $leave_type }}} ) {
-          affected_rows
-          returning {
-             bal
-             leave_type
-          }
-        }
-      }`;
-
-      let new_bal = 0;
-      if (this.selected === "sick_leave") {
-        new_bal = this.sick_leave_value - this.leave_days_value;
-        console.log("new sick leave bal" + new_bal);
-      } else {
-        new_bal = this.earned_leave_value - this.leave_days_value;
-        console.log("new earned leave bal" + new_bal);
-      }
-      let variables = {
-        bal: new_bal,
-        leave_type: this.selected,
-        emp_id: this.user_id
-      };
-
-      const url = "http://localhost:8080/v1/graphql";
-      const opts = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          query: update_leave_bal_query,
-          variables: variables
-        })
-      };
-
-      fetch(url, opts)
-        .then(res => res.json())
-        .then(result => {
-          if (result.data && result.data.update_leave_app_employee_leavebal) {
-            // Leave bal update is successful
-            if (
-              result.data.update_leave_app_employee_leavebal.affected_rows === 1
-            ) {
-              console.log("balance updated successfully");
-              if (this.selected === "sick_leave") {
-                this.sick_leave_value = new_bal;
-              } else {
-                this.earned_leave_value = new_bal;
-              }
-              // emit a event to parent to rerender the component
-              this.$emit("ChangeView");
-            }
-          }
-        })
-        .catch(error => {
-          console.log("error is " + error.message);
-        });
-    },
     calculate_leave_days: function() {
       console.log("calculate_leave_days function called ");
       this.work_day_query(this.fromdate, this.todate);
-    },
-    // function to calculate work days between dates
-    work_days: function(from_date, to_date) {
-      let leave_days = 0;
-      let weeks = 0;
-      let date1 = this.$moment(from_date);
-      let date2 = this.$moment(to_date);
-      let totDays = date2.diff(date1, "days");
-      // find out the day of the week - from date
-      // convert to date object
-      let from_dt = new Date(from_date);
-      //let to_dt = new Date(to_date);
-      // find out the day of the week
-      let from_day = from_dt.getDay();
-      //let to_day = to_dt.getDay();
-      /* find out the distance from the first Sunday */
-      let dist = 7 - from_day;
-      if (totDays > dist) {
-        weeks = 1;
-        let excess = totDays - dist;
-        // check out full weeks
-        weeks += Math.floor(excess / 7);
-      }
-      leave_days = totDays - 2 * weeks + 1;
-      return leave_days;
     },
     /* Function to fetch work days based on 
        1) weekends 
