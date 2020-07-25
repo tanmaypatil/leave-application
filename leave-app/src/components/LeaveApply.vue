@@ -59,7 +59,17 @@
                 :value="earned_leave"
               ></b-form-textarea>
               <div>
-                <b-table striped hover :items="items"></b-table>
+                <div class="overflow-auto">
+                  <b-pagination 
+                   v-model="currentPage"
+                   :total-rows="rows"
+                   :per-page="perPage"
+                  ></b-pagination>
+                </div>
+                <b-table striped 
+                :per-page="perPage"
+                :current-page="currentPage"
+                hover :items="items"></b-table>
               </div>
             </b-card-text>
           </b-card-body>
@@ -74,6 +84,8 @@ export default {
   name: "leave-apply",
   data() {
     return {
+      currentPage: 1,
+      perPage : 5,
       user_id: 2,
       error_message: "",
       fromdate: null,
@@ -96,6 +108,11 @@ export default {
       items: []
     };
   },
+  computed: {
+      rows() {
+        return this.items.length;
+      }
+    },
   methods: {
     calculate_leave_days: function() {
       console.log("calculate_leave_days function called ");
@@ -179,43 +196,58 @@ export default {
           }
         `;
 
-       let variables = {
-          fromDate: this.fromdate,
-          toDate: this.todate,
-          typeOfLeave : this.selected,
-          userId : this.user_id,
-          reason: this.reason
-        };
+      let variables = {
+        fromDate: this.fromdate,
+        toDate: this.todate,
+        typeOfLeave: this.selected,
+        userId: this.user_id,
+        reason: this.reason
+      };
 
-        const url = "http://localhost:8080/v1/graphql";
-        const opts = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query: query, variables: variables })
-        };
+      const url = "http://localhost:8080/v1/graphql";
+      const opts = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: query, variables: variables })
+      };
 
-        fetch(url, opts)
-          .then(res => res.json())
-          .then(result => {
-            console.log("result --"+JSON.stringify(result));
-              // check for errors
-              if (result.errors) {
-                console.log(JSON.stringify(result.errors));
-                this.error_message  = result.errors[0].message;
-            }
-            else if (result.data 
-            && result.data.leaveValidateAndApply
-                 && result.data.leaveValidateAndApply.message
-              ) {
-                // update the leave balance
-                //this.update_leave_balance();
-                 this.$emit("ChangeView",result.data.leaveValidateAndApply.message);
-              } 
-          })
-          .catch( (errors) => {
-            console.log("errors "+JSON.stringify(errors));
-            this.error_message = errors;
-          });      
+      fetch(url, opts)
+        .then(res => res.json())
+        .then(result => {
+          console.log("result --" + JSON.stringify(result));
+          // check for errors
+          if (result.errors) {
+            console.log(JSON.stringify(result.errors));
+            this.error_message = result.errors[0].message;
+          } else if (
+            result.data &&
+            result.data.leaveValidateAndApply &&
+            result.data.leaveValidateAndApply.message
+          ) {
+            // update the leave balance
+            //this.update_leave_balance();
+            this.$emit("ChangeView", result.data.leaveValidateAndApply.message);
+          }
+        })
+        .catch(errors => {
+          console.log("errors " + JSON.stringify(errors));
+          this.error_message = errors;
+        });
+    },
+    linkGen(pageNum) {
+      console.log("move to page : "+pageNum);
+      let path = '/leave-inquiry/' + pageNum;
+      return {
+        path: path,
+        params: { page_number : pageNum }
+      }
+    },
+  },
+  watch: {
+    $route : function ( to, from) {
+      // react to route changes...
+      console.log("route changed to " + to);
+      console.log("route changed from" + from);
     }
   },
   // Fetch the leave data for the employee
