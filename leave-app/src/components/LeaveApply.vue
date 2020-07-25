@@ -42,7 +42,7 @@
         <b-col cols="8">
           <b-card-body title="Leave Information">
             <b-card-text>
-              <label for="error-panel">Errors:</label>
+              <label for="error-panel"><b-badge v-if="error_message" variant="danger">Errors</b-badge></label>
               <b-form-textarea id="error-panel" plaintext :value="error_message"></b-form-textarea>
               <b-form-textarea
                 id="sick-leave-detail"
