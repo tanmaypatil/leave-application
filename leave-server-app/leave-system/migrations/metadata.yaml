@@ -112,7 +112,7 @@ tables:
 actions:
 - name: getWorkingDays
   definition:
-    handler: http://host.docker.internal:3000/api/getWorkingDays
+    handler: '{{ACTION_BASE_ENDPOINT}}/api/getWorkingDays'
     output_type: WorkingDays
     arguments:
     - name: arg1
@@ -120,7 +120,7 @@ actions:
     type: query
 - name: leaveValidateAndApply
   definition:
-    handler: http://host.docker.internal:3000/api/leaveApply
+    handler: '{{ACTION_BASE_ENDPOINT}}/api/leaveApply'
     output_type: LeaveOutput
     arguments:
     - name: arg1

@@ -10,7 +10,7 @@ services:
     environment:
       POSTGRES_PASSWORD: postgrespassword
   graphql-engine:
-    image: hasura/graphql-engine:v1.2.2
+    image: hasura/graphql-engine:v1.3.3
     ports:
     - "8080:8080"
     depends_on:
@@ -20,8 +20,20 @@ services:
       HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_DEV_MODE : "true"
+      ACTION_BASE_ENDPOINT : http://host.docker.internal:3000
       ## uncomment next line to set an admin secret
       # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+  hasura-actions:
+    image : leave-action-app/experimental:0.1
+    ports : 
+      - "3000:3000"
+    restart : always 
+    environment : 
+      GRAPHQL_HOST : http://host.docker.internal:8080/v1/graphql
+ 
+       
+
 volumes:
   db_data:
 

@@ -1,5 +1,0 @@
-query workingDays($fromDate : String! , $toDate : String! , $userId : Int!) {
-  getWorkingDays(arg1: {fromDate: $fromDate, toDate: $toDate, userId: $userId}){
-    leaveDays
-  }
-}

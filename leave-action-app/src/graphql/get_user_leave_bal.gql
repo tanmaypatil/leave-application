@@ -1,7 +1,0 @@
-query leave_balance($userId: Int) {
-  leave_app_employee_leavebal(where: {emp_id: {_eq: $userId}}) {
-    bal
-    leave_type
-    emp_id
-  }
-}
