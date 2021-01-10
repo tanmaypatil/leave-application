@@ -21,4 +21,4 @@ echo "installing hasura cli"
 #install hasura cli 
 npm install  hasura-cli@latest
 # hasura version
-/usr/local/lib/node_modules/hasura-cli/hasura version
+/github/workspace/node_modules/hasura-cli/hasura version
