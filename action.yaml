@@ -1,0 +1,6 @@
+name: 'Git hub action for verifying hasura installation'
+description: 'start hasura instance , apply migration and metadata'
+runs:
+   using: 'docker'
+   image: 'Dockerfile'
+   
