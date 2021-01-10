@@ -19,6 +19,6 @@ apk add curl libstdc++
    
 echo "installing hasura cli"
 #install hasura cli 
-npm install -g --force hasura-cli@latest
+npm install  hasura-cli@latest
 # hasura version
-hasura version
+/usr/local/lib/node_modules/hasura-cli/hasura version
