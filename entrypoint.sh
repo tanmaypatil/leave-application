@@ -23,6 +23,8 @@ npm install  hasura-cli@latest
 # hasura version
 /github/workspace/node_modules/hasura-cli/hasura version
 cd leave-server-app/leave-system
+# start hasura engine 
+docker-compose up
 # hasura migrate apply
 /github/workspace/node_modules/hasura-cli/hasura migrate apply 
 # hasura metadata apply
