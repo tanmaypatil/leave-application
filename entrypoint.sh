@@ -22,9 +22,10 @@ echo "installing hasura cli"
 npm install  hasura-cli@latest
 # hasura version
 /github/workspace/node_modules/hasura-cli/hasura version
-cd leave-server-app/leave-system
+cd leave-server-app/
 # start hasura engine 
-docker-compose up
+docker-compose -f  docker-compose-hasura.yaml up
+cd leave-system
 # hasura migrate apply
 /github/workspace/node_modules/hasura-cli/hasura migrate apply 
 # hasura metadata apply
