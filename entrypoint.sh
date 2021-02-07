@@ -47,7 +47,7 @@ echo "moving to start hasura migration"
 cd ./leave-system
 # hasura migrate apply
 echo "hausra migration"
-/github/workspace/node_modules/hasura-cli/hasura migrate apply --endpoint ${ip}:8080
+/github/workspace/node_modules/hasura-cli/hasura migrate apply --endpoint http://${ip}:8080
 # hasura metadata apply
 echo "hausra metadata"
-/github/workspace/node_modules/hasura-cli/hasura metadata apply --endpoint ${ip}:8080
+/github/workspace/node_modules/hasura-cli/hasura metadata apply --endpoint http://${ip}:8080
