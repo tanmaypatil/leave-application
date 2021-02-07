@@ -28,6 +28,7 @@ cd leave-server-app
 # start hasura engine 
 docker-compose -f  docker-compose-hasura.yaml up -d 
 echo "check if docker container is up "
+docker ps
 status=`docker ps | grep hasura/graphql-engine | awk '{print $8}'`
 echo "docker status ${status}"
 while [ $status  !=  "Up" ]
@@ -37,11 +38,16 @@ do
    echo "sleeping for 5 seconds"
    sleep 5 
 done
+echo "checking container id"
+container_id=`docker ps | grep hasura/graphql-engine | awk '{print $1}'`
+echo "hasura engine id ${container_id}"
+ip=docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${container_id}
+"echo ip is ${ip}"
 echo "moving to start hasura migration"
 cd ./leave-system
 # hasura migrate apply
 echo "hausra migration"
-/github/workspace/node_modules/hasura-cli/hasura migrate apply 
+/github/workspace/node_modules/hasura-cli/hasura migrate apply --endpoint ${ip}:8080
 # hasura metadata apply
 echo "hausra metadata"
-/github/workspace/node_modules/hasura-cli/hasura metadata apply 
+/github/workspace/node_modules/hasura-cli/hasura metadata apply --endpoint ${ip}:8080
