@@ -24,7 +24,16 @@ npm install  hasura-cli@latest
 /github/workspace/node_modules/hasura-cli/hasura version
 cd leave-server-app
 # start hasura engine 
-docker-compose -f  docker-compose-hasura.yaml up
+docker-compose -f  docker-compose-hasura.yaml up -d 
+echo "check if docker container is up "
+status=`docker ps | grep hasura/graphql-engine | awk '{print $8}'`
+while [ $status -eq "up "]
+do
+   status=`docker ps | grep hasura/graphql-engine | awk '{print $8}'`
+   echo "status of hasura ${status} "
+   echo "sleeping for 5 seconds"
+   sleep 5 
+done
 echo "moving to start hasura migration"
 cd ./leave-system
 # hasura migrate apply
