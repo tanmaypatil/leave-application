@@ -4,6 +4,8 @@ apk add --no-cache python python-dev python3 python3-dev \
     linux-headers build-base bash git ca-certificates 
 # Add python pip and bash
 apk add --no-cache curl py3-pip libffi-dev libressl-dev musl-dev  gcc
+# add docker
+apk add docker
 pip3 install --upgrade pip setuptools
 # install docker compose
 pip3 install --no-cache-dir docker-compose
@@ -27,7 +29,7 @@ cd leave-server-app
 docker-compose -f  docker-compose-hasura.yaml up -d 
 echo "check if docker container is up "
 status=`docker ps | grep hasura/graphql-engine | awk '{print $8}'`
-while [ $status -eq "up "]
+while [ $status -ne "up "]
 do
    status=`docker ps | grep hasura/graphql-engine | awk '{print $8}'`
    echo "status of hasura ${status} "
