@@ -41,8 +41,8 @@ done
 echo "checking container id"
 container_id=`docker ps | grep hasura/graphql-engine | awk '{print $1}'`
 echo "hasura engine id ${container_id}"
-ip=docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${container_id}
-"echo ip is ${ip}"
+ip=`docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${container_id}`
+echo "ip for hasura container is ${ip}"
 echo "moving to start hasura migration"
 cd ./leave-system
 # hasura migrate apply
