@@ -34,7 +34,7 @@ docker-compose -f  docker-compose-hasura.yaml up -d
 echo "check if docker container is up "
 docker ps
 echo "check network interfaces"
-docker network inspect
+docker network inspect bridge
 
 status=`docker ps | grep hasura/graphql-engine | awk '{print $8}'`
 echo "docker status ${status}"
