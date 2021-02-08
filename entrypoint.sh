@@ -2,6 +2,10 @@
 set -e
 apk add --no-cache python python-dev python3 python3-dev \
     linux-headers build-base bash git ca-certificates 
+
+# install rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs
+
 # Add python pip and bash
 apk add --no-cache curl py3-pip libffi-dev libressl-dev musl-dev  gcc
 # add docker
