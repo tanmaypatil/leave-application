@@ -12,6 +12,9 @@ RUN apk add --no-cache \
 EXPOSE 8080
 # Copies your code file  repository to the filesystem
 COPY entrypoint.sh /entrypoint.sh
+ENV RUSTUP_HOME=/rust
+ENV CARGO_HOME=/cargo 
+ENV PATH=/cargo/bin:/rust/bin:$PATH
  
 # change permission to execute the script and
 RUN chmod +x /entrypoint.sh
