@@ -33,6 +33,9 @@ cd leave-server-app
 docker-compose -f  docker-compose-hasura.yaml up -d 
 echo "check if docker container is up "
 docker ps
+echo "check network interfaces"
+docker network inspect
+
 status=`docker ps | grep hasura/graphql-engine | awk '{print $8}'`
 echo "docker status ${status}"
 while [ $status  !=  "Up" ]
