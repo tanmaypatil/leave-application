@@ -33,12 +33,16 @@ jobs:
         uses: actions/checkout@v2
       - name: run hasura installation
         run : npm install hasura-cli pg
-      - name : hasura migration 
+      - name : check docker container statuse
+        run : docker ps
+      - name : Postgres connect 
         run : node client.js  
         env:
           # The hostname used to communicate with the PostgreSQL service container
           POSTGRES_HOST: postgres
           POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
+      - name : run hasura migration 
+        run : bash migrate.sh
        
       
       
