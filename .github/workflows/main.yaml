@@ -31,8 +31,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name : install curl
+        run : apt install curl
+      - name : install hasura cli
+        run: curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
       - name: run hasura installation
-        run : npm install hasura-cli pg
+        run : npm install pg
       # - name : check docker container statuse
       #   run : docker ps
       - name : Postgres connect 
