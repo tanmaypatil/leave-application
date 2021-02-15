@@ -1,4 +1,6 @@
-/github/workspace/node_modules/hasura-cli/hasura version
+hasura update-cli --version v1.3.4-beta.3
+
+hasura version
 
 cd leave-server-app/leave-system
 #print hasura host 
