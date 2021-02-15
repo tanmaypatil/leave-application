@@ -47,6 +47,8 @@ jobs:
           POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
       - name : run hasura migration 
         run : bash migrate.sh
+        env:
+          HASURA_HOST : hasura
        
       
       
