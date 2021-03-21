@@ -1,0 +1,7 @@
+[
+{
+    "description" : "employee master query",
+    "request" : "leave_emp.graphql",
+    "response" : "leave_emp_response.json"
+
+}]
