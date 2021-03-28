@@ -1,114 +1,124 @@
-version: 2
-tables:
-- table:
-    schema: leave_app
-    name: employee
-  object_relationships:
-  - name: employee
-    using:
-      foreign_key_constraint_on: mgr_id
-  - name: entity
-    using:
-      foreign_key_constraint_on: entity_id
-  - name: entity_location
-    using:
-      foreign_key_constraint_on: location_id
-  array_relationships:
-  - name: employee_leavebals
-    using:
-      foreign_key_constraint_on:
-        column: emp_id
-        table:
-          schema: leave_app
-          name: employee_leavebal
-  - name: employees
-    using:
-      foreign_key_constraint_on:
-        column: mgr_id
-        table:
-          schema: leave_app
-          name: employee
-  - name: leave_applications
-    using:
-      foreign_key_constraint_on:
-        column: emp_id
-        table:
-          schema: leave_app
-          name: leave_applications
-  - name: leaveApplicationsByApprovedBy
-    using:
-      foreign_key_constraint_on:
-        column: approved_by
-        table:
-          schema: leave_app
-          name: leave_applications
-- table:
-    schema: leave_app
-    name: employee_leavebal
-  object_relationships:
-  - name: employee
-    using:
-      foreign_key_constraint_on: emp_id
-- table:
-    schema: leave_app
-    name: entity
-  array_relationships:
-  - name: employees
-    using:
-      foreign_key_constraint_on:
-        column: entity_id
-        table:
-          schema: leave_app
-          name: employee
-  - name: entity_locations
-    using:
-      foreign_key_constraint_on:
-        column: entity_id
-        table:
-          schema: leave_app
-          name: entity_location
-  - name: holidays
-    using:
-      foreign_key_constraint_on:
-        column: entity_id
-        table:
-          schema: leave_app
-          name: holidays
-- table:
-    schema: leave_app
-    name: entity_location
-  object_relationships:
-  - name: entity
-    using:
-      foreign_key_constraint_on: entity_id
-  array_relationships:
-  - name: employees
-    using:
-      foreign_key_constraint_on:
-        column: location_id
-        table:
-          schema: leave_app
-          name: employee
-- table:
-    schema: leave_app
-    name: holidays
-  object_relationships:
-  - name: entity
-    using:
-      foreign_key_constraint_on: entity_id
-- table:
-    schema: leave_app
-    name: leave_applications
-  object_relationships:
-  - name: employee
-    using:
-      foreign_key_constraint_on: emp_id
-  - name: employeeByApprovedBy
-    using:
-      foreign_key_constraint_on: approved_by
-- table:
-    schema: leave_app
-    name: manager
+version: 3
+sources:
+- name: default
+  tables:
+  - table:
+      schema: leave_app
+      name: employee
+    object_relationships:
+    - name: employee
+      using:
+        foreign_key_constraint_on: mgr_id
+    - name: entity
+      using:
+        foreign_key_constraint_on: entity_id
+    - name: entity_location
+      using:
+        foreign_key_constraint_on: location_id
+    array_relationships:
+    - name: employee_leavebals
+      using:
+        foreign_key_constraint_on:
+          column: emp_id
+          table:
+            schema: leave_app
+            name: employee_leavebal
+    - name: employees
+      using:
+        foreign_key_constraint_on:
+          column: mgr_id
+          table:
+            schema: leave_app
+            name: employee
+    - name: leaveApplicationsByApprovedBy
+      using:
+        foreign_key_constraint_on:
+          column: approved_by
+          table:
+            schema: leave_app
+            name: leave_applications
+    - name: leave_applications
+      using:
+        foreign_key_constraint_on:
+          column: emp_id
+          table:
+            schema: leave_app
+            name: leave_applications
+  - table:
+      schema: leave_app
+      name: employee_leavebal
+    object_relationships:
+    - name: employee
+      using:
+        foreign_key_constraint_on: emp_id
+  - table:
+      schema: leave_app
+      name: entity
+    array_relationships:
+    - name: employees
+      using:
+        foreign_key_constraint_on:
+          column: entity_id
+          table:
+            schema: leave_app
+            name: employee
+    - name: entity_locations
+      using:
+        foreign_key_constraint_on:
+          column: entity_id
+          table:
+            schema: leave_app
+            name: entity_location
+    - name: holidays
+      using:
+        foreign_key_constraint_on:
+          column: entity_id
+          table:
+            schema: leave_app
+            name: holidays
+  - table:
+      schema: leave_app
+      name: entity_location
+    object_relationships:
+    - name: entity
+      using:
+        foreign_key_constraint_on: entity_id
+    array_relationships:
+    - name: employees
+      using:
+        foreign_key_constraint_on:
+          column: location_id
+          table:
+            schema: leave_app
+            name: employee
+  - table:
+      schema: leave_app
+      name: holidays
+    object_relationships:
+    - name: entity
+      using:
+        foreign_key_constraint_on: entity_id
+  - table:
+      schema: leave_app
+      name: leave_applications
+    object_relationships:
+    - name: employee
+      using:
+        foreign_key_constraint_on: emp_id
+    - name: employeeByApprovedBy
+      using:
+        foreign_key_constraint_on: approved_by
+  - table:
+      schema: leave_app
+      name: manager
+  configuration:
+    connection_info:
+      database_url:
+        from_env: HASURA_GRAPHQL_DATABASE_URL
+      pool_settings:
+        retries: 1
+        idle_timeout: 180
+        max_connections: 50
 actions:
 - name: getWorkingDays
   definition:
