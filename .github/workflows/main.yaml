@@ -50,6 +50,10 @@ jobs:
         run : bash migrate.sh
         env:
           HASURA_HOST : hasura
+      - name: run hasura regression test
+        run : npm test
+        env :
+          GRAPHQL_HOST : hasura
        
       
       

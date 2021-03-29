@@ -1,4 +1,7 @@
-var assert = require('assert');
+
+let jsondiffpatch = require('jsondiffpatch')
+let chai = require('chai')
+var assert = chai.assert;
 describe('Array', function() {
   describe('#indexOf()', function() {
     it('should return -1 when the value is not present', function() {
@@ -16,6 +19,9 @@ describe('graphql sanity', function() {
         let query_str = util.getGraphQLQueryStr(query_name)
         let response = await util.executeGraphQLQuery(query_str,null)
         console.log('inside graphql sanity ' + JSON.stringify(response))
+        let expected_response = require('./response/leave_emp.json')
+        let delta = jsondiffpatch.diff(expected_response,response)
+        assert.equal(delta,null,'Difference should be null')
 
       });
     });

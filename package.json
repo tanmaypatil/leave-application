@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/tanmaypatil/leave-application#readme",
   "dependencies": {
+    "chai": "^4.3.4",
     "fs": "0.0.1-security",
     "jsondiffpatch": "^0.4.1",
     "mocha": "^8.3.2",
