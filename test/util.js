@@ -22,7 +22,7 @@ function executeGraphQLQuery(query, variables) {
             url = 'http://' + process.env.GRAPHQL_HOST + ':8080/v1/graphql'
         }
         else {
-           url  = "http://localhost:8080/v1/graphql";
+           url  = 'http://localhost:8080/v1/graphql';
         }
         console.log('graphql server url '+ url)
         const opts = {
