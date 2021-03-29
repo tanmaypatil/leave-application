@@ -9,7 +9,7 @@ echo ${HASURA_HOST}
 echo "performing migration"
 hasura migrate apply --endpoint http://${HASURA_HOST}:8080
 echo "perform hasura seeds application"
-hasura seed apply --endpoint http://${HASURA_HOST}:8080
+hasura seeds apply --endpoint http://${HASURA_HOST}:8080
 echo "performing metadata application"
 hasura metadata apply --endpoint http://${HASURA_HOST}:8080
 
