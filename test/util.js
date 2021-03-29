@@ -17,7 +17,14 @@ function getGraphQLQueryStr(qryPath) {
 */
 function executeGraphQLQuery(query, variables) {
     return new Promise(async function (resolve, reject) {
-        const url = process.env.GRAPHQL_HOST || "http://localhost:8080/v1/graphql";
+        let url = ''
+        if (process.env.GRAPHQL_HOST ){
+            url = 'http://' + process.env.GRAPHQL_HOST + ':8080/v1/graphql'
+        }
+        else {
+           url  = "http://localhost:8080/v1/graphql";
+        }
+        console.log('graphql server url '+ url)
         const opts = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
