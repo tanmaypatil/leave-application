@@ -1,0 +1,32 @@
+{
+  "name": "leave-application",
+  "version": "1.0.0",
+  "description": "leave application hasura metadata project",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha test/run_tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tanmaypatil/leave-application.git"
+  },
+  "keywords": [
+    "leave-app"
+  ],
+  "author": "Tanmay Patil",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tanmaypatil/leave-application/issues"
+  },
+  "homepage": "https://github.com/tanmaypatil/leave-application#readme",
+  "dependencies": {
+    "chai": "^4.3.4",
+    "fs": "0.0.1-security",
+    "jsondiffpatch": "^0.4.1",
+    "mocha": "^8.3.2",
+    "node-fetch": "^2.6.1"
+  }
+}

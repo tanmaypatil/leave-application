@@ -1,0 +1,8 @@
+query leave_app {
+  leave_app_employee {
+      emp_name
+      status
+      entity_id
+    }
+  
+}

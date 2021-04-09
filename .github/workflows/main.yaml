@@ -1,14 +1,59 @@
 on: [push]
-
 jobs:
-  custom_test:
+  container-job:
     runs-on: ubuntu-latest
+    container : 
+      image : node:10.18-jessie
     name: testing hasura installation
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:12 
+        ports:
+          - 5432:5432
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgrespassword
+          POSTGRES_DB: postgres
+        # Set health checks to wait until postgres has started
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      hasura:
+        image: hasura/graphql-engine:v1.4.0-alpha.1
+        ports:
+          - 8080:8080
+        env :
+          HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
+          HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+          HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+          HASURA_GRAPHQL_DEV_MODE : "true"
+          ACTION_BASE_ENDPOINT : http://localhost:3000
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name : install curl
+        run : apt install curl
+      - name : install hasura cli
+        run: curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
       - name: run hasura installation
-        uses: ./
+        run : npm install pg
+      # - name : check docker container statuse
+      #   run : docker ps
+      - name : Postgres connect 
+        run : node client.js  
+        env:
+          # The hostname used to communicate with the PostgreSQL service container
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
+      - name : run hasura migration 
+        run : bash migrate.sh
+        env:
+          HASURA_HOST : hasura
+      - name: run hasura regression test
+        run : npm test
+        env :
+          GRAPHQL_HOST : hasura
        
       
       

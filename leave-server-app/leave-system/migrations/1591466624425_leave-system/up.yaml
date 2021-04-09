@@ -2,3 +2,8 @@
     tables: []
     version: 2
   type: replace_metadata
+- args:
+    cascade: false
+    read_only: false
+    sql: CREATE SCHEMA "leave_app" ;
+  type: run_sql
